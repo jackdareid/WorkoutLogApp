@@ -5,33 +5,66 @@ const hash = (p) => {
   return p;
 };
 
-// This function creates a new user
 const createUser = async (first_name, last_name, email, password) => {
+  /*
+   * This function creates a new user and returns the user's user_id once created.
+   * It requires user's first and last name, email, and a password.
+   */
+
   // Query info
   const queryText = `
     INSERT INTO users (f_name, l_name, email, password_hash)
     VALUES
-    ($1, $2, $3, $4)`;
+    ($1, $2, $3, $4)
+    RETURNING user_id, f_name, email, date_joined`;
 
-  // Hash password and get values array
   const hashed_password = hash(password);
   const values = [first_name, last_name, email, hashed_password];
 
   try {
     const res = await pool.query(queryText, values);
-    console.log(`Result: ${res.rows}`);
+
+    // Return user data
+    return res.rows[0];
   } catch (err) {
-    console.log(`Error occurred: ${err}`);
-  } finally {
-    await pool.end();
+    // 23505 is a Unique Violation error
+    if (err.code === "23505") {
+      console.error("User creation failed: email already exists");
+    }
+
+    // Throw so that API sends error response back to user.
+    throw err;
   }
 };
 
-const createProgram = async (program_name, program_notes) => {
+const createProgram = async (user_id, program_name, program_notes) => {
   /*
    * This function creates a new program. Workouts are linked to a program.
-   * Need to get user id for this
+   *
+   * Currently writing this under the assumption that we will have access to user_id
+   * from the frontend. If not, create query to find user_id using email.
    */
+
+  // Step 1: Create SQL Query
+  const queryText = `
+    INSERT INTO programs (user_id, name, notes)
+    VALUES ($1, $2, $3)
+    RETURNING program_id, user_id, name, date_created, notes
+  `;
+
+  const values = [user_id, program_name, program_notes];
+
+  try {
+    const res = await pool.query(queryText, values);
+
+    // Return program data
+    return res.rows[0];
+  } catch (err) {
+    console.error("Program creation failed.");
+  }
+
+  // Throw for API response
+  throw err;
 };
 
 const createWorkout = async (workout_name, workout_notes) => {
@@ -79,3 +112,13 @@ const createCompletedSet = async (weight, reps, rpe, set_number) => {
 };
 
 // createUser("Jackson", "Reid", "juckjack@jack.jack", "packjacksackrack");
+
+module.exports = {
+  createUser,
+  createProgram,
+  createWorkout,
+  createWorkoutExercises,
+  createCompletedWorkout,
+  createCompletedExercise,
+  createCompletedSet,
+};
