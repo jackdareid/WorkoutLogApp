@@ -16,7 +16,8 @@ const createUser = async (first_name, last_name, email, password) => {
     INSERT INTO users (f_name, l_name, email, password_hash)
     VALUES
     ($1, $2, $3, $4)
-    RETURNING user_id, f_name, email, date_joined`;
+    RETURNING *;
+  `;
 
   const hashed_password = hash(password);
   const values = [first_name, last_name, email, hashed_password];
@@ -30,10 +31,10 @@ const createUser = async (first_name, last_name, email, password) => {
     // 23505 is a Unique Violation error
     if (err.code === "23505") {
       console.error("User creation failed: email already exists");
-    }
 
-    // Throw so that API sends error response back to user.
-    throw err;
+      // Throw so that API sends error response back to user.
+      throw err;
+    }
   }
 };
 
@@ -49,7 +50,7 @@ const createProgram = async (user_id, program_name, program_notes) => {
   const queryText = `
     INSERT INTO programs (user_id, name, notes)
     VALUES ($1, $2, $3)
-    RETURNING program_id, user_id, name, date_created, notes
+    RETURNING *;
   `;
 
   const values = [user_id, program_name, program_notes];
@@ -61,10 +62,10 @@ const createProgram = async (user_id, program_name, program_notes) => {
     return res.rows[0];
   } catch (err) {
     console.error("Program creation failed.");
-  }
 
-  // Throw for API response
-  throw err;
+    // Throw for API response
+    throw err;
+  }
 };
 
 const createWorkout = async (
@@ -83,7 +84,7 @@ const createWorkout = async (
   const queryText = `
     INSERT INTO workouts (user_id, program_id, name, notes)
     VALUES ($1, $2, $3, $4)
-    RETURNING workout_id, program_id, name, notes
+    RETURNING *;
   `;
 
   const values = [user_id, program_id, workout_name, workout_notes];
@@ -93,10 +94,10 @@ const createWorkout = async (
     return res.rows[0];
   } catch (err) {
     console.error("Workout creation failed");
-  }
 
-  // Throw err for API response
-  throw err;
+    // Throw err for API response
+    throw err;
+  }
 };
 
 const createWorkoutExercises = async (
@@ -118,11 +119,12 @@ const createWorkoutExercises = async (
   const queryText = `
     INSERT INTO workout_exercises (workout_id, exercise_id, order_index, target_sets, target_reps, rest, time_flag, distance, notes)
     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+    RETURNING *;
   `;
 
-  values = [
-    exercise_id,
+  const values = [
     workout_id,
+    exercise_id,
     order_index,
     sets,
     reps,
@@ -137,10 +139,10 @@ const createWorkoutExercises = async (
     return res.rows[0];
   } catch (err) {
     console.error("Workout exercise creation failed.");
-  }
 
-  // Throw err for api return
-  throw err;
+    // Throw err for api return
+    throw err;
+  }
 };
 
 const createCompletedWorkout = async (user_id, workout_id, notes) => {
@@ -153,19 +155,20 @@ const createCompletedWorkout = async (user_id, workout_id, notes) => {
   const queryText = `
   INSERT INTO workout_completed (user_id, workout_id, notes)
   VALUES ($1, $2, $3) 
+  RETURNING *; 
   `;
 
-  values = [user_id, workout_id, notes];
+  const values = [user_id, workout_id, notes];
 
   try {
     const res = await pool.query(queryText, values);
     return res.rows[0];
   } catch (err) {
     console.error("Completed workout creation failed.");
-  }
 
-  // Throw err for api response
-  throw err;
+    // Throw err for api response
+    throw err;
+  }
 };
 
 const createCompletedExercise = async (
@@ -184,6 +187,7 @@ const createCompletedExercise = async (
   const queryText = `
     INSERT INTO completed_exercises (user_id, exercise_id, workout_completed_id, time_flag, notes)
     VALUES ($1, $2, $3, $4, $5)
+    RETURNING *;
   `;
 
   const values = [user_id, exercise_id, workout_completed_id, time_flag, notes];
@@ -193,10 +197,10 @@ const createCompletedExercise = async (
     return res.rows[0];
   } catch (err) {
     console.error("Completed exercise creation failed");
-  }
 
-  // Throw err for api response
-  throw err;
+    // Throw err for api response
+    throw err;
+  }
 };
 
 const createCompletedSet = async (
@@ -223,6 +227,9 @@ const createCompletedSet = async (
     return res.rows[0];
   } catch (err) {
     console.error("Completed set creation failed.");
+
+    // Throw err for api reponse
+    throw err;
   }
 };
 
