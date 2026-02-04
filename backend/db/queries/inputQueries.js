@@ -67,14 +67,41 @@ const createProgram = async (user_id, program_name, program_notes) => {
   throw err;
 };
 
-const createWorkout = async (workout_name, workout_notes) => {
+const createWorkout = async (
+  user_id,
+  program_id,
+  workout_name,
+  workout_notes,
+) => {
   /*
    * This function creates a new workout
-   * Need to get user id and program id if applicable
+   *
+   * Currently acting under the assumption that we will have access to user_id and program_id
    */
+
+  // Step 1: Create SQL Query
+  const queryText = `
+    INSERT INTO workouts (user_id, program_id, name, notes)
+    VALUES ($1, $2, $3, $4)
+    RETURNING workout_id, program_id, name, notes
+  `;
+
+  const values = [user_id, program_id, workout_name, workout_notes];
+
+  try {
+    const res = await pool.query(queryText, values);
+    return res.rows[0];
+  } catch (err) {
+    console.error("Workout creation failed");
+  }
+
+  // Throw err for API response
+  throw err;
 };
 
 const createWorkoutExercises = async (
+  exercise_id,
+  workout_id,
   order_index,
   sets,
   reps,
@@ -87,31 +114,122 @@ const createWorkoutExercises = async (
    * This function links an exercise to a workout
    * Need workout id and exercise id
    */
+
+  const queryText = `
+    INSERT INTO workout_exercises (workout_id, exercise_id, order_index, target_sets, target_reps, rest, time_flag, distance, notes)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+  `;
+
+  values = [
+    exercise_id,
+    workout_id,
+    order_index,
+    sets,
+    reps,
+    rest,
+    time_f,
+    distance,
+    notes,
+  ];
+
+  try {
+    const res = await pool.query(queryText, values);
+    return res.rows[0];
+  } catch (err) {
+    console.error("Workout exercise creation failed.");
+  }
+
+  // Throw err for api return
+  throw err;
 };
 
-const createCompletedWorkout = async (start_time, end_time, notes) => {
+const createCompletedWorkout = async (user_id, workout_id, notes) => {
   /*
    * This function creates an instance of a completed workout
    * Need user id and workout id
+   * Not sure how to implement end time here... maybe an end workout button?
    */
+
+  const queryText = `
+  INSERT INTO workout_completed (user_id, workout_id, notes)
+  VALUES ($1, $2, $3) 
+  `;
+
+  values = [user_id, workout_id, notes];
+
+  try {
+    const res = await pool.query(queryText, values);
+    return res.rows[0];
+  } catch (err) {
+    console.error("Completed workout creation failed.");
+  }
+
+  // Throw err for api response
+  throw err;
 };
 
-const createCompletedExercise = async (time_flag, notes) => {
+const createCompletedExercise = async (
+  user_id,
+  exercise_id,
+  workout_completed_id,
+  time_flag,
+  notes,
+) => {
   /*
    * This function is used to track notes for completed exercises. The actual
    * exercise reps and weights will be tracked under completed_sets.
    * Need user id, exercise id, workout id.
    */
+
+  const queryText = `
+    INSERT INTO completed_exercises (user_id, exercise_id, workout_completed_id, time_flag, notes)
+    VALUES ($1, $2, $3, $4, $5)
+  `;
+
+  const values = [user_id, exercise_id, workout_completed_id, time_flag, notes];
+
+  try {
+    const res = await pool.query(queryText, values);
+    return res.rows[0];
+  } catch (err) {
+    console.error("Completed exercise creation failed");
+  }
+
+  // Throw err for api response
+  throw err;
 };
 
-const createCompletedSet = async (weight, reps, rpe, set_number) => {
+const createCompletedSet = async (
+  completed_exercise_id,
+  weight,
+  reps,
+  rpe,
+  set_number,
+) => {
   /*
    * This function is used to create a finished set instance.
    * Needs completed exercise id
    */
+
+  const queryText = `
+    INSERT INTO completed_sets (completed_exercise_id, weight, reps, rpe, set_number)
+    VALUES ($1, $2, $3, $4, $5)
+  `;
+
+  const values = [completed_exercise_id, weight, reps, rpe, set_number];
+
+  try {
+    const res = await pool.query(queryText, values);
+    return res.rows[0];
+  } catch (err) {
+    console.error("Completed set creation failed.");
+  }
 };
 
 // createUser("Jackson", "Reid", "juckjack@jack.jack", "packjacksackrack");
+
+// NOTE: user_exercise_stats is not accounted for here. I think it should be calculated upon workout completion.
+// NOTE: Or maybe calculated upon user input of an exercise?? That paves the way to lot's of mistakes though... hmm
 
 module.exports = {
   createUser,
