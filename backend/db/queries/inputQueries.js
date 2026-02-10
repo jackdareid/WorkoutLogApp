@@ -9,6 +9,11 @@ const createUser = async (first_name, last_name, email, password) => {
   /*
    * This function creates a new user and returns the user's user_id once created.
    * It requires user's first and last name, email, and a password.
+   *
+   * Tested: True
+   *
+   * Accepts: user's info
+   * Returns: user's information, minus their hashed password
    */
 
   // Query info
@@ -16,7 +21,7 @@ const createUser = async (first_name, last_name, email, password) => {
     INSERT INTO users (f_name, l_name, email, password_hash)
     VALUES
     ($1, $2, $3, $4)
-    RETURNING *;
+    RETURNING f_name, l_name, date_joined, email;
   `;
 
   const hashed_password = hash(password);
@@ -42,8 +47,10 @@ const createProgram = async (user_id, program_name, program_notes) => {
   /*
    * This function creates a new program. Workouts are linked to a program.
    *
-   * Currently writing this under the assumption that we will have access to user_id
-   * from the frontend. If not, create query to find user_id using email.
+   * Tested: True
+   *
+   * Accepts: user program info.
+   * Returns: the program instance
    */
 
   // Step 1: Create SQL Query
@@ -77,7 +84,10 @@ const createWorkout = async (
   /*
    * This function creates a new workout
    *
-   * Currently acting under the assumption that we will have access to user_id and program_id
+   * Tested: True
+   *
+   * Accepts: user workout info
+   * Returns: workout instance
    */
 
   // Step 1: Create SQL Query
@@ -113,7 +123,11 @@ const createWorkoutExercises = async (
 ) => {
   /*
    * This function links an exercise to a workout
-   * Need workout id and exercise id
+   *
+   * Tested: True
+   *
+   * Accepts: the information to link an exercise to a workout
+   * Returns: the workout exercise instance
    */
 
   const queryText = `
@@ -150,6 +164,9 @@ const createCompletedWorkout = async (user_id, workout_id, notes) => {
    * This function creates an instance of a completed workout
    * Need user id and workout id
    * Not sure how to implement end time here... maybe an end workout button?
+   *
+   *
+   * Tested: True
    */
 
   const queryText = `
@@ -182,6 +199,8 @@ const createCompletedExercise = async (
    * This function is used to track notes for completed exercises. The actual
    * exercise reps and weights will be tracked under completed_sets.
    * Need user id, exercise id, workout id.
+   *
+   * Tested: True
    */
 
   const queryText = `
@@ -213,6 +232,8 @@ const createCompletedSet = async (
   /*
    * This function is used to create a finished set instance.
    * Needs completed exercise id
+   *
+   * Tested: True
    */
 
   const queryText = `
@@ -232,8 +253,6 @@ const createCompletedSet = async (
     throw err;
   }
 };
-
-// createUser("Jackson", "Reid", "juckjack@jack.jack", "packjacksackrack");
 
 // NOTE: user_exercise_stats is not accounted for here. I think it should be calculated upon workout completion.
 // NOTE: Or maybe calculated upon user input of an exercise?? That paves the way to lot's of mistakes though... hmm
