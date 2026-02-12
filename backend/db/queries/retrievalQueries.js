@@ -1,6 +1,6 @@
 // retrievalQueries.js
 
-const pool = require("./poolConnection.js");
+const pool = require("../poolConnection.js");
 
 // 1. Retrieve user data
 const getUserData = async (email) => {
@@ -161,12 +161,11 @@ const getPreviousWorkout = async (workout_id) => {
     workout_details = await pool.query(join_query_2, [
       completed_workouts.rows[0].workout_completed_id,
     ]);
+    return workout_details;
   } catch (err) {
     console.error("Failed to join");
     throw err;
   }
-
-  return workout_details;
 };
 
 // 6.  all exercises
@@ -191,6 +190,30 @@ const getExercises = async () => {
   }
 };
 
+// 7. Retrieve user info for login
+const getLoginInfo = async (email) => {
+  /*
+   * This function returns the user's email and password for authentication purposes.
+   *
+   * Tested: False
+   *
+   * Accepts: email
+   * Returns: email, hashed_password
+   */
+  const queryText = `
+    SELECT * FROM users
+    WHERE email = $1;
+  `;
+
+  try {
+    const res = await pool.query(queryText, [email]);
+    return res.rows[0];
+  } catch (err) {
+    console.error("Error retrieving user login info.");
+    throw err;
+  }
+};
+
 module.exports = {
   getUserData,
   checkEmail,
@@ -199,4 +222,5 @@ module.exports = {
   getProgramWorkouts,
   getPreviousWorkout,
   getExercises,
+  getLoginInfo,
 };

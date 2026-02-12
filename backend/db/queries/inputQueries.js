@@ -1,5 +1,5 @@
 // db/queries/inputQueries.js
-const pool = require("./poolConnection.js");
+const pool = require("../poolConnection.js");
 
 const hash = (p) => {
   return p;
