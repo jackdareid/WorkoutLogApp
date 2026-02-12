@@ -102,7 +102,10 @@ const getProgramWorkouts = async (program_id) => {
    * Returns: List of workouts.
    */
 
-  const queryText = `SELECT * FROM workouts WHERE program_id = $1;`;
+  const queryText = `
+    SELECT * FROM workouts 
+    WHERE program_id = $1;
+  `;
 
   try {
     const res = await pool.query(queryText, [program_id]);
@@ -119,7 +122,7 @@ const getPreviousWorkout = async (workout_id) => {
    * This function finds all exercises associated with the provided workout and returns the users
    * stats in order to help them remember what they should be lifting this time.
    *
-   * Tested: False
+   * Tested: True
    *
    * Accepts: workout_id
    * Returns List of weight values: one for each exercise.
@@ -127,7 +130,10 @@ const getPreviousWorkout = async (workout_id) => {
   // (workout_id) --> workout_exercises (for order_index of each exercise)
   // Get list of exercises
 
-  const completed_workout_query = `SELECT * FROM workout_completed WHERE workout_id = $1;`;
+  const completed_workout_query = `
+    SELECT * FROM workout_completed 
+    WHERE workout_id = $1;
+  `;
   let completed_workouts;
   try {
     completed_workouts = await pool.query(completed_workout_query, [
@@ -164,23 +170,33 @@ const getPreviousWorkout = async (workout_id) => {
 };
 
 // 6.  all exercises
+const getExercises = async () => {
+  /*
+   * This function retrieves list of exercises from the db
+   *
+   * Tested: True
+   *
+   * Accepts: None
+   * Returns: Rows of exercises
+   */
+  const queryText = `
+    SELECT * FROM exercises;
+  `;
+  try {
+    const res = await pool.query(queryText);
+    return res.rows;
+  } catch (err) {
+    console.error("Error retrieving exercises.");
+    throw err;
+  }
+};
 
-// 7. Update exercise stats upon workout completion (differnt file)
-
-// 8. Authenticate email & password
-
-// (async () => {
-//   const value1 = await checkEmail("testy@gmail.com");
-//   console.log(`Good email: ${value1.rowCount}`);
-//   const value2 = await checkEmail("testfail@gmail.com");
-//   console.log(`Fail email: ${value2.rowCount}`);
-// })();
-
-// (async () => {
-//   const res = await getProgramWorkouts(1);
-//   console.log(res.rows[0]);
-// })();
-
-(async () => {
-  await getPreviousWorkout((workout_id = 3));
-})();
+module.exports = {
+  getUserData,
+  checkEmail,
+  getPrograms,
+  getUserWorkouts,
+  getProgramWorkouts,
+  getPreviousWorkout,
+  getExercises,
+};
