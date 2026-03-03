@@ -1,9 +1,7 @@
 // db/queries/inputQueries.js
 const pool = require("../poolConnection.js");
-
-const hash = (p) => {
-  return p;
-};
+const bcrypt = require("bcrypt");
+const saltRounds = 10;
 
 const createUser = async (first_name, last_name, email, password) => {
   /*
@@ -24,22 +22,21 @@ const createUser = async (first_name, last_name, email, password) => {
     RETURNING f_name, l_name, date_joined, email;
   `;
 
-  const hashed_password = hash(password);
-  const values = [first_name, last_name, email, hashed_password];
-
   try {
-    const res = await pool.query(queryText, values);
+    const hashed_password = await bcrypt.hash(password, saltRounds);
+    const values = [first_name, last_name, email, hashed_password];
 
-    // Return user data
+    const res = await pool.query(queryText, values);
     return res.rows[0];
   } catch (err) {
     // 23505 is a Unique Violation error
     if (err.code === "23505") {
       console.error("User creation failed: email already exists");
-
-      // Throw so that API sends error response back to user.
-      throw err;
+    } else {
+      console.error("Database error during user creation:", err.message);
     }
+
+    throw err;
   }
 };
 
