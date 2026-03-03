@@ -32,7 +32,9 @@ const loginUser = async (req, res) => {
       // Success!
       // Destructure to remove password_hash data
       const { password_hash, ...user_data } = user;
-      return res.json({ message: "Login successful", data: user_data });
+      return res
+        .status(201)
+        .json({ message: "Login successful", data: user_data });
     }
 
     // Password failed

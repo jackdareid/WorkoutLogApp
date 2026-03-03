@@ -1,7 +1,6 @@
 // db/queries/inputQueries.js
 const pool = require("../poolConnection.js");
 const bcrypt = require("bcrypt");
-const saltRounds = 10;
 
 const createUser = async (first_name, last_name, email, password) => {
   /*
@@ -102,7 +101,7 @@ const createWorkout = async (user_id, workout_name, workout_notes) => {
   }
 };
 
-const linkProgramWorkout = async (user_id, program_id, workout_id) => {
+const addProgramWorkout = async (program_id, workout_id, user_id) => {
   /*
    * This function links a workout to a program
    *
@@ -110,7 +109,7 @@ const linkProgramWorkout = async (user_id, program_id, workout_id) => {
    *
    * Accepts: user_id, program_id, workout_id
    *
-   * Returns: Success / failure
+   * Returns: instance
    */
   const queryText = `
     INSERT INTO program_workouts (program_id, workout_id, user_id)
@@ -283,4 +282,5 @@ module.exports = {
   createCompletedWorkout,
   createCompletedExercise,
   createCompletedSet,
+  addProgramWorkout,
 };
