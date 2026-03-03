@@ -72,12 +72,7 @@ const createProgram = async (user_id, program_name, program_notes) => {
   }
 };
 
-const createWorkout = async (
-  user_id,
-  program_id,
-  workout_name,
-  workout_notes,
-) => {
+const createWorkout = async (user_id, workout_name, workout_notes) => {
   /*
    * This function creates a new workout
    *
@@ -89,12 +84,12 @@ const createWorkout = async (
 
   // Step 1: Create SQL Query
   const queryText = `
-    INSERT INTO workouts (user_id, program_id, name, notes)
-    VALUES ($1, $2, $3, $4)
+    INSERT INTO workouts (user_id, name, notes)
+    VALUES ($1, $2, $3)
     RETURNING *;
   `;
 
-  const values = [user_id, program_id, workout_name, workout_notes];
+  const values = [user_id, workout_name, workout_notes];
 
   try {
     const res = await pool.query(queryText, values);
@@ -103,6 +98,32 @@ const createWorkout = async (
     console.error("Workout creation failed");
 
     // Throw err for API response
+    throw err;
+  }
+};
+
+const linkProgramWorkout = async (user_id, program_id, workout_id) => {
+  /*
+   * This function links a workout to a program
+   *
+   * Tested: false
+   *
+   * Accepts: user_id, program_id, workout_id
+   *
+   * Returns: Success / failure
+   */
+  const queryText = `
+    INSERT INTO program_workouts (program_id, workout_id, user_id)
+    VALUES ($1, $2, $3);
+  `;
+
+  const values = [program_id, workout_id, user_id];
+
+  try {
+    const res = await pool.query(queryText, values);
+    return res.rows[0];
+  } catch (err) {
+    console.error("Program workout link failed");
     throw err;
   }
 };
