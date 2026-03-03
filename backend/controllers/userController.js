@@ -9,6 +9,8 @@ const loginUser = async (req, res) => {
   /*
    * This function logs a user in and returns all of their info minus their password.
    *
+   * Tested: False
+   *
    * Accepts: req and res
    *
    * Returns: json user data
@@ -45,6 +47,8 @@ const loginUser = async (req, res) => {
 const signupUser = async (req, res) => {
   /*
    * This function signs a user up with the f_name, l_name, email, and password.
+   *
+   * Tested: False
    *
    * Accepts: req and res
    *

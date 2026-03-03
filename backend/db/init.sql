@@ -15,17 +15,27 @@ CREATE TABLE programs (
     name VARCHAR(100) NOT NULL,
     date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     notes TEXT,
+    CONSTRAINT UQ_ProgramName UNIQUE (name, user_id),
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
 CREATE TABLE workouts (
     workout_id SERIAL PRIMARY KEY,
     user_id INT NOT NULL,
-    program_id INT,
     name VARCHAR(100),
     notes TEXT,
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
     FOREIGN KEY (program_id) REFERENCES programs(program_id) ON DELETE SET NULL
+);
+
+CREATE TABLE program_workouts (
+  program_id INT,
+  workout_id INT,
+  user_id INT,
+  PRIMARY KEY (program_id, workout_id),
+  FOREIGN KEY (program_id) REFERENCES programs(program_id) ON DELETE CASCADE,
+  FOREIGN KEY (workout_id) REFERENCES workouts(workout_id) ON DELETE CASCADE,
+  FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
 CREATE TABLE exercises (
