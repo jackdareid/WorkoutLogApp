@@ -1,10 +1,18 @@
 const bcrypt = require("bcrypt");
 const {
   getLoginInfo,
-  getUserData,
+  checkEmail,
 } = require("../db/queries/retrievalQueries.js");
+const { createUser } = require("../db/queries/inputQueries.js");
 
 const loginUser = async (req, res) => {
+  /*
+   * This function logs a user in and returns all of their info minus their password.
+   *
+   * Accepts: req and res
+   *
+   * Returns: json user data
+   */
   const { email, password } = req.body;
 
   try {
@@ -34,7 +42,31 @@ const loginUser = async (req, res) => {
   }
 };
 
-const signupUser = async (req, res) => {};
+const signupUser = async (req, res) => {
+  /*
+   * This function signs a user up with the f_name, l_name, email, and password.
+   *
+   * Accepts: req and res
+   *
+   * Returns: user instance
+   */
+  const { f_name, l_name, email, password } = req.body;
+
+  try {
+    // Internal check on whether email is in use or not.
+    const obj = await createUser(f_name, l_name, email, password);
+    return res
+      .status(201)
+      .json({ message: "Succesfully created user!", data: obj });
+  } catch (err) {
+    if (err.code === "23505") {
+      return res.status(409).json({ error: "Email already in use" });
+    }
+    console.error("Error creating user");
+
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
 
 // const mockReq = {
 //   body: {
