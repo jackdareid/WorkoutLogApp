@@ -101,19 +101,20 @@ const createWorkout = async (user_id, workout_name, workout_notes) => {
   }
 };
 
+/**
+ * Links a workout to a specific program in the database.
+ * * @async
+ * @param {number} program_id - Unique id of the program
+ * @param {number} workout_id - Unique id of the workout
+ * @param {number} user_id - Unique id of the user
+ * @returns {Promise<Object>} The newly created relationship record
+ * @throws {Error} Throws a 23505 error if the link already exists.
+ */
 const addProgramWorkout = async (program_id, workout_id, user_id) => {
-  /*
-   * This function links a workout to a program
-   *
-   * Tested: false
-   *
-   * Accepts: user_id, program_id, workout_id
-   *
-   * Returns: instance
-   */
   const queryText = `
     INSERT INTO program_workouts (program_id, workout_id, user_id)
-    VALUES ($1, $2, $3);
+    VALUES ($1, $2, $3)
+    RETURNING *;
   `;
 
   const values = [program_id, workout_id, user_id];
@@ -122,7 +123,7 @@ const addProgramWorkout = async (program_id, workout_id, user_id) => {
     const res = await pool.query(queryText, values);
     return res.rows[0];
   } catch (err) {
-    console.error("Program workout link failed");
+    console.error("Link failed:", err.message);
     throw err;
   }
 };
