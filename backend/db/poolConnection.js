@@ -1,4 +1,4 @@
-const { Pool } = require("pg");
+import { Pool } from "pg";
 require("dotenv").config();
 console.log(
   `Connecting to: ${process.env.DB_DATABASE} on host: ${process.env.DB_HOST}`,

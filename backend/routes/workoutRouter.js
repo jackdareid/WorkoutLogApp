@@ -1,5 +1,6 @@
 //routes/workoutRouter.js
-const { Router } = require("express");
+import { Router } from "express";
+
 const workoutRouter = Router();
 
 workoutRouter.post("/create", (req, res) => {

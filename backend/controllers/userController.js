@@ -1,8 +1,5 @@
-const bcrypt = require("bcrypt");
-const {
-  getLoginInfo,
-  checkEmail,
-} = require("../db/queries/retrievalQueries.js");
+import bcrypt from "bcrypt";
+import { getLoginInfo, checkEmail } from "../db/queries/retrievalQueries.js";
 const { createUser } = require("../db/queries/inputQueries.js");
 
 const loginUser = async (req, res) => {

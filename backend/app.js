@@ -1,4 +1,4 @@
-const express = require("express");
+import express from "express";
 const app = express();
 const apiRouter = require("./routes/apiRouter.js");
 const PORT = 3000;
