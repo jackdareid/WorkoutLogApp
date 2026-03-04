@@ -1,5 +1,5 @@
 // queries/updateQueries.sql
-const pool = require("../poolConnection.js");
+import pool from "../poolConnection.js";
 
 const removeProgramWorkout = async (program_id, workout_id) => {
   /*

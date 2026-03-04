@@ -1,5 +1,6 @@
 //routes/programRouter.js
-const { Router } = require("express");
+import Router from "express";
+
 const programRouter = Router();
 
 programRouter.post("/create", (req, res) => {
