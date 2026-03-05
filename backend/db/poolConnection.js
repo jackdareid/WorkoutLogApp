@@ -1,7 +1,9 @@
-import { Pool } from "pg";
+const path = require("path");
+const { Pool } = require("pg");
 require("dotenv").config({
   // Auto connect to test db when using jest
-  path: process.env.NODE_ENV === "test" ? ".env.test" : ".env",
+  // path: process.env.NODE_ENV === "test" ? ".env.test" : ".env",
+  path: path.resolve(__dirname, "../../.env.test"),
 });
 console.log(
   `Connecting to: ${process.env.DB_DATABASE} on host: ${process.env.DB_HOST}`,
