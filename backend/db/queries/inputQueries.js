@@ -1,6 +1,6 @@
 // db/queries/inputQueries.js
-import pool from "../poolConnection.js";
-import bcrypt from "bcrypt";
+const pool = require("../poolConnection.js");
+const bcrypt = require("bcrypt");
 
 const createUser = async (first_name, last_name, email, password) => {
   /*
@@ -22,7 +22,7 @@ const createUser = async (first_name, last_name, email, password) => {
   `;
 
   try {
-    const hashed_password = await bcrypt.hash(password, saltRounds);
+    const hashed_password = await bcrypt.hash(password, 10);
     const values = [first_name, last_name, email, hashed_password];
 
     const res = await pool.query(queryText, values);
