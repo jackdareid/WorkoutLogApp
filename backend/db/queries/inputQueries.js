@@ -2,18 +2,17 @@
 const pool = require("../poolConnection.js");
 const bcrypt = require("bcrypt");
 
+/**
+ * This function creates a new user.
+ * @async
+ * @param {String} first_name - User's first name
+ * @param {String} last_name - User's last name
+ * @param {String} email - User's email
+ * @param {String} password - User's password
+ * @returns {Promise<Object>} - Created user instance
+ * @throws {Error} If db fails to query.
+ */
 const createUser = async (first_name, last_name, email, password) => {
-  /*
-   * This function creates a new user and returns the user's user_id once created.
-   * It requires user's first and last name, email, and a password.
-   *
-   * Tested: True
-   *
-   * Accepts: user's info
-   * Returns: user's information, minus their hashed password
-   */
-
-  // Query info
   const queryText = `
     INSERT INTO users (f_name, l_name, email, password_hash)
     VALUES
@@ -39,17 +38,16 @@ const createUser = async (first_name, last_name, email, password) => {
   }
 };
 
+/**
+ * Creates a new program for a user.
+ * @async
+ * @param {number} user_id - Unique user id
+ * @param {string} program_name - User's program name
+ * @param {string} program_notes - Program's notes
+ * @returns {Promise<Object>} Returns program instance
+ * @throws {Error} If db fails to query
+ */
 const createProgram = async (user_id, program_name, program_notes) => {
-  /*
-   * This function creates a new program. Workouts are linked to a program.
-   *
-   * Tested: True
-   *
-   * Accepts: user program info.
-   * Returns: the program instance
-   */
-
-  // Step 1: Create SQL Query
   const queryText = `
     INSERT INTO programs (user_id, name, notes)
     VALUES ($1, $2, $3)
@@ -64,24 +62,23 @@ const createProgram = async (user_id, program_name, program_notes) => {
     // Return program data
     return res.rows[0];
   } catch (err) {
-    console.error("Program creation failed.");
+    console.error("Program creation failed:", err.message);
 
     // Throw for API response
     throw err;
   }
 };
 
+/**
+ * Creates a new workout
+ * @async
+ * @param {number} user_id - Unique user id
+ * @param {string} workout_name - name of workout
+ * @param {string} workout_notes - notes for workout
+ * @returns {Promise<Object>} Returns workout instance
+ * @throws {Error} Throws error if db fails to query
+ */
 const createWorkout = async (user_id, workout_name, workout_notes) => {
-  /*
-   * This function creates a new workout
-   *
-   * Tested: True
-   *
-   * Accepts: user workout info
-   * Returns: workout instance
-   */
-
-  // Step 1: Create SQL Query
   const queryText = `
     INSERT INTO workouts (user_id, name, notes)
     VALUES ($1, $2, $3)
@@ -94,7 +91,7 @@ const createWorkout = async (user_id, workout_name, workout_notes) => {
     const res = await pool.query(queryText, values);
     return res.rows[0];
   } catch (err) {
-    console.error("Workout creation failed");
+    console.error("Workout creation failed:", err.message);
 
     // Throw err for API response
     throw err;
@@ -128,28 +125,35 @@ const addProgramWorkout = async (program_id, workout_id, user_id) => {
   }
 };
 
-const createWorkoutExercises = async (
+/**
+ * Links an exercise to a user's workout.
+ * * @async
+ * @param {Object} workoutExerciseData - Exercise Details object
+ * @returns {Promise<Object>}
+ */
+const createWorkoutExercises = async ({
   exercise_id,
   workout_id,
   order_index,
   sets,
   reps,
-  rest,
-  time_f,
-  distance,
-  notes,
-) => {
-  /*
-   * This function links an exercise to a workout
-   *
-   * Tested: True
-   *
-   * Accepts: the information to link an exercise to a workout
-   * Returns: the workout exercise instance
-   */
-
+  rest = 60,
+  time_f = false,
+  distance = 0,
+  notes = "",
+}) => {
   const queryText = `
-    INSERT INTO workout_exercises (workout_id, exercise_id, order_index, target_sets, target_reps, rest, time_flag, distance, notes)
+    INSERT INTO workout_exercises (
+      workout_id, 
+      exercise_id, 
+      order_index, 
+      target_sets, 
+      target_reps, 
+      rest, 
+      time_flag, 
+      distance, 
+      notes
+    )
     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
     RETURNING *;
   `;
@@ -170,23 +174,23 @@ const createWorkoutExercises = async (
     const res = await pool.query(queryText, values);
     return res.rows[0];
   } catch (err) {
-    console.error("Workout exercise creation failed.");
+    console.error("Workout exercise creation failed:", err.message);
 
     // Throw err for api return
     throw err;
   }
 };
 
+/**
+ * Creates an instance of a completed workout
+ * @async
+ * @param {number} user_id - User id
+ * @param {number} workout_id - Completed workout id
+ * @param {String} notes - Completed workout notes
+ * @returns {Promise<Object>}
+ * @throws {Error} If database fails to query
+ */
 const createCompletedWorkout = async (user_id, workout_id, notes) => {
-  /*
-   * This function creates an instance of a completed workout
-   * Need user id and workout id
-   * Not sure how to implement end time here... maybe an end workout button?
-   *
-   *
-   * Tested: True
-   */
-
   const queryText = `
   INSERT INTO workout_completed (user_id, workout_id, notes)
   VALUES ($1, $2, $3) 
@@ -199,28 +203,27 @@ const createCompletedWorkout = async (user_id, workout_id, notes) => {
     const res = await pool.query(queryText, values);
     return res.rows[0];
   } catch (err) {
-    console.error("Completed workout creation failed.");
+    console.error("Completed workout creation failed:", err.message);
 
     // Throw err for api response
     throw err;
   }
 };
 
-const createCompletedExercise = async (
+/**
+ * Creates note tracker for completed exercises.
+ * * @async
+ * @param {Object} exerciseNotes - contains completed exercise notes
+ * @returns {Promise<Object>}
+ * @throws {Error} If db fails to query
+ */
+const createCompletedExercise = async ({
   user_id,
   exercise_id,
   workout_completed_id,
-  time_flag,
-  notes,
-) => {
-  /*
-   * This function is used to track notes for completed exercises. The actual
-   * exercise reps and weights will be tracked under completed_sets.
-   * Need user id, exercise id, workout id.
-   *
-   * Tested: True
-   */
-
+  time_flag = false,
+  notes = "",
+}) => {
   const queryText = `
     INSERT INTO completed_exercises (user_id, exercise_id, workout_completed_id, time_flag, notes)
     VALUES ($1, $2, $3, $4, $5)
@@ -233,30 +236,30 @@ const createCompletedExercise = async (
     const res = await pool.query(queryText, values);
     return res.rows[0];
   } catch (err) {
-    console.error("Completed exercise creation failed");
+    console.error("Completed exercise creation failed:", err.message);
 
     // Throw err for api response
     throw err;
   }
 };
 
-const createCompletedSet = async (
+/**
+ * This function creates a finshed set instance.
+ * * @async
+ * @param {Object} exerciseInfo - Contains set weight, rep, rpe, and index info.
+ * @returns {Promise<Object>}
+ */
+const createCompletedSet = async ({
   completed_exercise_id,
   weight,
   reps,
   rpe,
   set_number,
-) => {
-  /*
-   * This function is used to create a finished set instance.
-   * Needs completed exercise id
-   *
-   * Tested: True
-   */
-
+}) => {
   const queryText = `
     INSERT INTO completed_sets (completed_exercise_id, weight, reps, rpe, set_number)
     VALUES ($1, $2, $3, $4, $5)
+    RETURNING *;
   `;
 
   const values = [completed_exercise_id, weight, reps, rpe, set_number];
@@ -265,7 +268,7 @@ const createCompletedSet = async (
     const res = await pool.query(queryText, values);
     return res.rows[0];
   } catch (err) {
-    console.error("Completed set creation failed.");
+    console.error("Completed set creation failed:", err.message);
 
     // Throw err for api reponse
     throw err;

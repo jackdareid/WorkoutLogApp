@@ -17,7 +17,8 @@
   "scripts": {
     "start": "node app.js",
     "dev": "node --run start -- --watch",
-    "test": "NODE_ENV=test jest --watchAll --runInBand"
+    "test": "NODE_ENV=test jest --watch --runInBand",
+    "testAll": "NODE_ENV=test jest --runInBand --verbose"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
