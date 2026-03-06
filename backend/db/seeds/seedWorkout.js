@@ -16,43 +16,6 @@ import {
 //   console.log(res_1);
 // })();
 
-// async () => {
-//   const res = await createWorkoutExercises(
-//     1,
-//     3,
-//     1,
-//     2,
-//     10,
-//     90,
-//     "FALSE",
-//     0,
-//     "No notes",
-//   );
-//
-//   const res_2 = await createWorkoutExercises(
-//     2,
-//     3,
-//     2,
-//     2,
-//     10,
-//     90,
-//     "FALSE",
-//     0,
-//     "No notes",
-//   );
-//   const res_3 = await createWorkoutExercises(
-//     (exercise_id = 3),
-//     (workout_id = 3),
-//     (order_index = 3),
-//     (sets = 3),
-//     (reps = 3),
-//     (rest = 90),
-//     (time_f = "FALSE"),
-//     (distance = 0),
-//     (notes = "ANYTHING"),
-//   );
-// };
-
 // (async () => {
 //   const res = createCompletedWorkout(1, 3, "No notes!!");
 // })();

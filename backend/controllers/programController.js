@@ -4,7 +4,7 @@ import {
   addProgramWorkout,
 } from "../db/queries/inputQueries.js";
 
-import { removeProgramWorkout } from "../db/queries/updateQueries.js";
+const { removeProgramWorkout } = require("../db/queries/updateQueries.js");
 
 const makeProgram = async (req, res) => {
   /* This function creates a program.

@@ -14,7 +14,7 @@ const setupTestData = async () => {
     const hashed_password = await bcrypt.hash(password, 10);
 
     // 2. Insert fresh data
-    // User
+    // -------------- User --------------
     const user_script = `
       INSERT INTO users (f_name, l_name, email, password_hash) 
       VALUES ($1, $2, $3, $4)
@@ -24,7 +24,7 @@ const setupTestData = async () => {
 
     await pool.query(user_script, user_values);
 
-    // Program
+    // -------------- Program --------------
     const program_script = `
       INSERT INTO programs (user_id, name, notes)
       VALUES ($1, $2, $3);
@@ -33,7 +33,7 @@ const setupTestData = async () => {
 
     await pool.query(program_script, program_values);
 
-    // Workout
+    // -------------- Workout --------------
     const workout_script = `
       INSERT INTO workouts (user_id, name, notes)
       VALUES ($1, $2, $3);
@@ -42,7 +42,46 @@ const setupTestData = async () => {
 
     await pool.query(workout_script, workout_values);
 
-    console.log("Test database seeded successfully.");
+    // -------------- Exercise --------------
+    const exercise_script = `
+      INSERT INTO exercises (name, muscle_group)
+      VALUES       
+      ('Bench Press', 'Chest'),
+      ('Incline Dumbbell Press', 'Chest'),
+      ('Chest Fly', 'Chest'),
+      ('Squat', 'Legs'),
+      ('Leg Press', 'Legs'),
+      ('Leg Extension', 'Legs'),
+      ('Leg Curl', 'Legs'),
+      ('Deadlift', 'Back'),
+      ('Pull Up', 'Back'),
+      ('Barbell Row', 'Back'),
+      ('Overhead Press', 'Shoulders'),
+      ('Lateral Raise', 'Shoulders'),
+      ('Dumbbell Curl', 'Arms'),
+      ('Tricep Pushdown', 'Arms'),
+      ('Plank', 'Core');
+    `;
+
+    await pool.query(exercise_script);
+
+    // -------------- Completed Workout --------------
+    const comp_workout_script = `
+      INSERT INTO workout_completed 
+      (user_id, workout_id, notes)
+      VALUES (1, 1, 'No notes');
+    `;
+    await pool.query(comp_workout_script);
+
+    // -------------- Completed Exercises --------------
+    const comp_exercise_script = `
+      INSERT INTO completed_exercises
+      (user_id, exercise_id, workout_completed_id, time_flag, notes)
+      VALUES (1, 1, 1, FALSE, 'Completed!');
+    `;
+    await pool.query(comp_exercise_script);
+
+    // console.log("Test database seeded successfully.");
   } catch (err) {
     console.error("Error seeding test database:", err);
   }
