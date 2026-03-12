@@ -1,8 +1,8 @@
 //controllers/programController.js
-import {
+const {
   createProgram,
   addProgramWorkout,
-} from "../db/queries/inputQueries.js";
+} = require("../db/queries/inputQueries.js");
 
 const { removeProgramWorkout } = require("../db/queries/updateQueries.js");
 
@@ -42,8 +42,8 @@ const addWorkout = async (req, res) => {
    * TODO: Need to change eventually to account for a workout being added to a program multiple times.
    * This needs to be ALLOWED... db change necessary. Not a priority though.
    */
-
-  const { program_id, workout_id, user_id } = req.body;
+  const { id: program_id } = req.params;
+  const { workout_id, user_id } = req.body;
 
   try {
     const inst = await addProgramWorkout(program_id, workout_id, user_id);
@@ -63,16 +63,23 @@ const removeWorkout = async (req, res) => {
    *
    * Returns: boolean
    */
-  const { program_id, workout_id } = req.body;
+  const { id: program_id } = req.params;
+  const { workout_id } = req.body;
 
   try {
     await removeProgramWorkout(program_id, workout_id);
     return res.status(204).json({ message: "Workout deleted from program" });
   } catch (err) {
-    return res.status(500).json({ message: "Failure: Internal server error" });
+    if (err.code === "23505") {
+      return res.status(409).json({ error: "Workout already in program." });
+    }
+
+    res.status(500).json({ message: "Failure: Internal server error" });
   }
 };
 
 module.exports = {
   makeProgram,
+  addWorkout,
+  removeWorkout,
 };

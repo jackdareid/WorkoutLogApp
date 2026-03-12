@@ -1,5 +1,5 @@
-// queries/updateQueries.sql
-import pool from "../poolConnection.js";
+// queries/updateQueries.js
+const pool = require("../poolConnection.js");
 
 const removeProgramWorkout = async (program_id, workout_id) => {
   /*
@@ -9,16 +9,19 @@ const removeProgramWorkout = async (program_id, workout_id) => {
    */
   const queryText = `
     DELETE FROM program_workouts 
-    WHERE program_id = $1 AND workout_id = $2;
+    WHERE program_id = $1 AND workout_id = $2
+    RETURNING *;
   `;
 
   try {
-    await pool.query(queryText, [program_id, workout_id]);
-    return True;
+    const res = await pool.query(queryText, [program_id, workout_id]);
+    return res.rowCount > 0;
   } catch (err) {
     console.error("Failed to delete workout from program");
     throw err;
   }
 };
 
-module.exports = removeProgramWorkout;
+module.exports = {
+  removeProgramWorkout,
+};
