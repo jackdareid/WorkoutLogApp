@@ -42,6 +42,15 @@ const setupTestData = async () => {
 
     await pool.query(workout_script, workout_values);
 
+    // -------------- Program Workout --------------
+    const pw_script = `
+      INSERT INTO program_workouts (program_id, workout_id, user_id)
+      VALUES ($1, $2, $3)
+      RETURNING *;
+    `;
+
+    await pool.query(pw_script, [1, 1, 1]);
+
     // -------------- Exercise --------------
     const exercise_script = `
       INSERT INTO exercises (name, muscle_group)
@@ -80,6 +89,14 @@ const setupTestData = async () => {
       VALUES (1, 1, 1, FALSE, 'Completed!');
     `;
     await pool.query(comp_exercise_script);
+
+    // -------------- Completed Set --------------
+    const cs_script = `
+      INSERT INTO completed_sets (completed_exercise_id, weight, reps, rpe, set_number)
+      VALUES (1, 225, 10, 5, 2)
+      RETURNING *;
+    `;
+    await pool.query(cs_script);
 
     // console.log("Test database seeded successfully.");
   } catch (err) {

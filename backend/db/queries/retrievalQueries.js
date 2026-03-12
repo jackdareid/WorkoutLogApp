@@ -62,7 +62,7 @@ const getPrograms = async (user_id) => {
   try {
     const res = await pool.query(queryText, [user_id]);
     console.log(`Result: ${res}`);
-    return res;
+    return res.rows;
   } catch (err) {
     console.error(`Error retrieving user programs.`);
     throw err;
@@ -84,7 +84,7 @@ const getUserWorkouts = async (user_id) => {
 
   try {
     const res = await pool.query(queryText, [user_id]);
-    return res;
+    return res.rows;
   } catch (err) {
     console.error("Error retrieving users workouts.");
     throw err;
@@ -103,13 +103,14 @@ const getProgramWorkouts = async (program_id) => {
    */
 
   const queryText = `
-    SELECT * FROM workouts 
-    WHERE program_id = $1;
+    SELECT w.* FROM workouts w
+    JOIN program_workouts pw ON w.workout_id = pw.workout_id
+    WHERE pw.program_id = $1;
   `;
 
   try {
     const res = await pool.query(queryText, [program_id]);
-    return res;
+    return res.rows;
   } catch (err) {
     console.error("Error retrieving program workouts.");
     throw err;
@@ -156,12 +157,11 @@ const getPreviousWorkout = async (workout_id) => {
     ORDER BY 
       ce.completed_exercise_id ASC,
       cs.set_number;`;
-  let workout_details;
   try {
-    workout_details = await pool.query(join_query_2, [
+    const result = await pool.query(join_query_2, [
       completed_workouts.rows[0].workout_completed_id,
     ]);
-    return workout_details;
+    return result.rows;
   } catch (err) {
     console.error("Failed to join");
     throw err;
