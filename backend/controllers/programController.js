@@ -3,22 +3,25 @@ const {
   createProgram,
   addProgramWorkout,
 } = require("../db/queries/inputQueries.js");
-
+const { getPrograms } = require("../db/queries/retrievalQueries.js");
 const { removeProgramWorkout } = require("../db/queries/updateQueries.js");
 
-const makeProgram = async (req, res) => {
-  /* This function creates a program.
-   *
-   * Tested: false
-   *
-   * Accepts: req and res
-   *
-   * Returns: Program instance
-   */
-  const { user_id, program_name, program_notes } = req.body;
+const retrievePrograms = async (req, res) => {
+  const user_id = req.user;
 
   try {
-    // Check if program name connected to user already
+    const programs = await getPrograms(user_id);
+    return res.status(200).json({ data: programs });
+  } catch (err) {
+    return res.status(500).json({ message: "Failure: Internal server error" });
+  }
+};
+
+const makeProgram = async (req, res) => {
+  const user_id = req.user;
+  const { program_name, program_notes } = req.body;
+
+  try {
     const inst = await createProgram(user_id, program_name, program_notes);
     return res
       .status(201)
@@ -32,18 +35,9 @@ const makeProgram = async (req, res) => {
 };
 
 const addWorkout = async (req, res) => {
-  /*
-   * This function adds a workout to a program
-   *
-   * Tested: false
-   *
-   * Returns: workout
-   *
-   * TODO: Need to change eventually to account for a workout being added to a program multiple times.
-   * This needs to be ALLOWED... db change necessary. Not a priority though.
-   */
   const { id: program_id } = req.params;
-  const { workout_id, user_id } = req.body;
+  const { workout_id } = req.body;
+  const user_id = req.user;
 
   try {
     const inst = await addProgramWorkout(program_id, workout_id, user_id);
@@ -63,12 +57,11 @@ const removeWorkout = async (req, res) => {
    *
    * Returns: boolean
    */
-  const { id: program_id } = req.params;
-  const { workout_id } = req.body;
+  const { id: program_id, workout_id } = req.params;
 
   try {
     await removeProgramWorkout(program_id, workout_id);
-    return res.status(204).json({ message: "Workout deleted from program" });
+    return res.status(200).json({ message: "Workout deleted from program" });
   } catch (err) {
     if (err.code === "23505") {
       return res.status(409).json({ error: "Workout already in program." });
@@ -82,4 +75,5 @@ module.exports = {
   makeProgram,
   addWorkout,
   removeWorkout,
+  retrievePrograms,
 };

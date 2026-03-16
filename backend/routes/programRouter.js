@@ -1,17 +1,21 @@
 //routes/programRouter.js
 const { Router } = require("express");
+const { protect } = require("../middleware/authMiddleware.js");
 const {
   makeProgram,
   addWorkout,
+  retrievePrograms,
   removeWorkout,
 } = require("../controllers/programController.js");
 
 const programRouter = Router();
 
-programRouter.post("/create", makeProgram);
+programRouter.get("/", protect, retrievePrograms);
 
-programRouter.post("/:id/workouts", addWorkout);
+// programRouter.post("/create", protect, makeProgram);
 
-programRouter.delete("/:id/workouts/:workout_id", removeWorkout);
+// programRouter.post("/:id/workouts", protect, addWorkout);
+
+// programRouter.delete("/:id/workouts/:workout_id", protect, removeWorkout);
 
 module.exports = programRouter;
