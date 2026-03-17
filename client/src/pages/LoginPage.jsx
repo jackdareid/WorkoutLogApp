@@ -14,6 +14,8 @@ function LoginPage() {
       localStorage.setItem('token', token);
 
       alert("Login successful!");
+
+      onLogin();
     } catch (err) {
       alert("Login failed!");
     }
