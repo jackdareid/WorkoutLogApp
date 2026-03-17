@@ -16,6 +16,7 @@ const SALT_ROUNDS = 10;
  */
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
+  console.log(`Looking for user with email: ${email}`);
 
   try {
     const user = await getLoginInfo(email);

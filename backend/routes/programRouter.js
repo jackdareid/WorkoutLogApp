@@ -16,6 +16,6 @@ programRouter.get("/", protect, retrievePrograms);
 
 // programRouter.post("/:id/workouts", protect, addWorkout);
 
-// programRouter.delete("/:id/workouts/:workout_id", protect, removeWorkout);
+programRouter.delete("/:id/workouts/:workout_id", protect, removeWorkout);
 
 module.exports = programRouter;
