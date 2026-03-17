@@ -1,5 +1,5 @@
 //routes/workoutRouter.js
-import { Router } from "express";
+const Router = require("express");
 
 const workoutRouter = Router();
 

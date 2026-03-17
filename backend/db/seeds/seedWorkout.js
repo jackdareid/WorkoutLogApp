@@ -1,10 +1,10 @@
-import {
+const {
   createWorkout,
   createWorkoutExercises,
   createCompletedWorkout,
   createCompletedExercise,
   createCompletedSet,
-} from "./queries/inputQueries.js";
+} = require("./queries/inputQueries.js");
 
 // (async () => {
 //   const res_1 = await createWorkout(

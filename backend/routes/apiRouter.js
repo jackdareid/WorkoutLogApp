@@ -1,4 +1,4 @@
-import Router from "express";
+const Router = require("express");
 const root = Router();
 
 // Import routing files here
@@ -8,7 +8,7 @@ const workoutRouter = require("./workoutRouter.js");
 
 // Routes
 root.use("/user", userRouter);
-root.use("/program", programRouter);
-root.use("/workout", workoutRouter);
+root.use("/programs", programRouter);
+root.use("/workouts", workoutRouter);
 
 module.exports = root;
