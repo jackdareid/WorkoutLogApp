@@ -4,13 +4,16 @@ const { protect } = require("../middleware/authMiddleware.js");
 const {
   makeProgram,
   addWorkout,
-  retrievePrograms,
   removeWorkout,
+  getWorkouts,
+  retrievePrograms,
 } = require("../controllers/programController.js");
 
 const programRouter = Router();
 
 programRouter.get("/", protect, retrievePrograms);
+
+programRouter.get("/:id/workouts", protect, getWorkouts);
 
 // programRouter.post("/create", protect, makeProgram);
 
