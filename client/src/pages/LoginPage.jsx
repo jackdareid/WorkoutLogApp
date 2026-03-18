@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { apiService } from '../api/apiService.js';
 
-function LoginPage() {
+function LoginPage({ onLogin }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -12,11 +12,11 @@ function LoginPage() {
     try {
       const { token } = await apiService.login(email, password)
       localStorage.setItem('token', token);
-
+      onLogin();
       alert("Login successful!");
 
-      onLogin();
     } catch (err) {
+      console.error("Failed to login:", err.message);
       alert("Login failed!");
     }
   };

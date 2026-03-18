@@ -3,7 +3,10 @@ const {
   createProgram,
   addProgramWorkout,
 } = require("../db/queries/inputQueries.js");
-const { getPrograms } = require("../db/queries/retrievalQueries.js");
+const {
+  getPrograms,
+  getProgramWorkouts,
+} = require("../db/queries/retrievalQueries.js");
 const { removeProgramWorkout } = require("../db/queries/updateQueries.js");
 
 const retrievePrograms = async (req, res) => {
@@ -71,9 +74,37 @@ const removeWorkout = async (req, res) => {
   }
 };
 
+/**
+ * @async
+ * This function retrieves workouts relating to a certain program.
+ */
+const getWorkouts = async (req, res) => {
+  const { id: program_id } = req.params;
+
+  if (!program_id) {
+    return res.status(400).json({ message: "Program ID is required" });
+  }
+
+  try {
+    const workouts = await getProgramWorkouts(program_id);
+    if (!workouts || workouts.length == 0) {
+      return res
+        .status(404)
+        .json({ message: "No workouts found for this program" });
+    }
+    return res
+      .status(200)
+      .json({ message: "Workouts successfully retrieved", data: workouts });
+  } catch (err) {
+    console.error("Error in getWorkouts:", err);
+    res.status(500).json({ message: "Failure: Internal server error" });
+  }
+};
+
 module.exports = {
   makeProgram,
   addWorkout,
   removeWorkout,
+  getWorkouts,
   retrievePrograms,
 };
