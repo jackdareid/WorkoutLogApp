@@ -117,6 +117,31 @@ const getProgramWorkouts = async (program_id) => {
   }
 };
 
+/**
+ * @async
+ * This function retrieves all exercises associated with a workout and their sets / reps in
+ * this specific workout..
+ * @param {number} workout_id - The workout's unique id
+ * @return {Promise<Object>}
+ */
+const getWorkoutExercises = async (workout_id) => {
+  // Eventually load exercises with getProgramWorkouts above ^^
+  const sql = `
+    SELECT we.*, e.name 
+    FROM workout_exercises we
+    LEFT JOIN exercises e ON we.exercise_id = e.exercise_id
+    WHERE we.workout_id = $1
+    ORDER BY we.order_index ASC;
+  `;
+  try {
+    const response = await pool.query(sql, [workout_id]);
+    return response.rows;
+  } catch (err) {
+    console.error("Error retrieving workout exercises:", err.message);
+    throw err;
+  }
+};
+
 // 5. Get stats from previous iteration of current workout
 const getPreviousWorkout = async (workout_id) => {
   /*
@@ -220,6 +245,7 @@ module.exports = {
   getPrograms,
   getUserWorkouts,
   getProgramWorkouts,
+  getWorkoutExercises,
   getPreviousWorkout,
   getExercises,
   getLoginInfo,

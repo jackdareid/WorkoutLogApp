@@ -6,6 +6,7 @@ const {
 const {
   getPrograms,
   getProgramWorkouts,
+  getWorkoutExercises,
 } = require("../db/queries/retrievalQueries.js");
 const { removeProgramWorkout } = require("../db/queries/updateQueries.js");
 
@@ -96,7 +97,34 @@ const getWorkouts = async (req, res) => {
       .status(200)
       .json({ message: "Workouts successfully retrieved", data: workouts });
   } catch (err) {
-    console.error("Error in getWorkouts:", err);
+    console.error("Error in getWorkouts:", err.message);
+    res.status(500).json({ message: "Failure: Internal server error" });
+  }
+};
+
+/**
+ * @async
+ * This function retrieves exercises relating to a given workout id.
+ */
+const getExercises = async (req, res) => {
+  const { workout_id } = req.params;
+
+  if (!workout_id) {
+    return res.status(400).json({ message: "Workout id required" });
+  }
+
+  try {
+    const exercises = await getWorkoutExercises(workout_id);
+    if (!exercises || exercises.length == 0) {
+      return res
+        .status(404)
+        .json({ message: "No exercises found for this workout" });
+    }
+    return res
+      .status(200)
+      .json({ message: "Exercises successfully retrieved", data: exercises });
+  } catch (err) {
+    console.error("Error retrieving exercises:", err.message);
     res.status(500).json({ message: "Failure: Internal server error" });
   }
 };
@@ -106,5 +134,6 @@ module.exports = {
   addWorkout,
   removeWorkout,
   getWorkouts,
+  getExercises,
   retrievePrograms,
 };

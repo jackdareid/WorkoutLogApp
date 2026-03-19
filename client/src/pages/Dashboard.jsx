@@ -6,6 +6,8 @@ function Dashboard({ onLogout }) {
   const [programs, setPrograms] = useState([]);
   const [currProgramId, setCurrProgramId] = useState(null);
   const [workouts, setWorkouts] = useState([]);
+  const [currWorkoutId, setCurrWorkoutId] = useState(null);
+  const [exercises, setExercises] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const fetchData = async () => {
@@ -25,6 +27,8 @@ function Dashboard({ onLogout }) {
   }
 
   const viewWorkouts = async (programId) => {
+    setExercises([]);
+    setCurrWorkoutId(null);
     if (currProgramId === programId) {
       setCurrProgramId(null);
       setWorkouts([]);
@@ -32,14 +36,30 @@ function Dashboard({ onLogout }) {
     }
 
     try {
-      setCurrProgramId(programId);
       const response = await apiService.getWorkouts(programId);
+      setCurrProgramId(programId);
       setWorkouts(response.data);
     } catch (err) {
       console.error("Failed to retrieve workouts:", err.message);
       alert("Failed to retrieve workouts");
     }
 
+  };
+
+  const viewWorkoutExercises = async (programId, workoutId) => {
+    if (currWorkoutId === workoutId) {
+      setCurrWorkoutId(null);
+      setExercises([]);
+      return;
+    }
+    try {
+      const response = await apiService.getWorkoutExercises(programId, workoutId);
+      setCurrWorkoutId(workoutId);
+      setExercises(response.data);
+    } catch (err) {
+      console.error("Failed to retrieve workout exercises:", err.message);
+      alert("Failed to retrieve workout exercises");
+    }
   };
 
   useEffect(() => {
@@ -62,13 +82,30 @@ function Dashboard({ onLogout }) {
             <div key={program.program_id} style={{ border: '1px solid #ccc', margin: '10px', padding: '10px' }}>
               <h3>{program.name}</h3>
               <button onClick={() => viewWorkouts(program.program_id)}>
-                {currProgramId === program.program_id ? "Close" : "View Workouts"}</button>
+                {currProgramId === program.program_id ? "Close" : "View Workouts"}
+              </button>
               <p>{program.notes}</p>
               {currProgramId === program.program_id &&
                 <div className="workoutDetails">
                   {workouts.length > 0 ? (
                     workouts.map((w) => (
-                      <div key={w.workout_id}> {w.name}: {w.notes}</div>
+                      <div key={w.workout_id}>
+                        <h5>{w.name}: {w.notes}</h5>
+                        <button onClick={() => viewWorkoutExercises(program.program_id, w.workout_id)}>
+                          {currWorkoutId === w.workout_id ? "Close" : "View Workout Details"}
+                        </button>
+                        {currWorkoutId === w.workout_id &&
+                          <div className="exerciseDetails">
+                            {exercises.length > 0 ? (
+                              exercises.map((e) => (
+                                <p key={e.exercise_id}>{e.name}</p>
+                              ))
+                            ) : (
+                              <p>No exercises found</p>
+                            )}
+                          </div>
+                        }
+                      </div>
                     ))
                   ) : (
                     <p>No workouts found</p>
