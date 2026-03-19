@@ -45,7 +45,6 @@ export const apiService = {
     return await response.json();
   },
   getWorkouts: async (programId) => {
-    console.log(programId);
     const response = await fetch(`${URL}/programs/${programId}/workouts`, {
       method: "GET",
       headers: getHeaders(),
@@ -54,6 +53,22 @@ export const apiService = {
 
     if (!response.ok) {
       throw new Error("Program workouts retreival failed");
+    }
+
+    return await response.json();
+  },
+  getWorkoutExercises: async (programId, workoutId) => {
+    const response = await fetch(
+      `${URL}/programs/${programId}/workouts/${workoutId}`,
+      {
+        method: "GET",
+        headers: getHeaders(),
+      },
+    );
+    handleResponse(response);
+
+    if (!response.ok) {
+      throw new Error("Workout exercise retrieval failed");
     }
 
     return await response.json();
