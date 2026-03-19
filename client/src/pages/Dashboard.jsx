@@ -4,6 +4,8 @@ import { apiService } from '../api/apiService.js';
 
 function Dashboard({ onLogout }) {
   const [programs, setPrograms] = useState([]);
+  const [currProgramId, setCurrProgramId] = useState(null);
+  const [workouts, setWorkouts] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const fetchData = async () => {
@@ -22,21 +24,23 @@ function Dashboard({ onLogout }) {
     }
   }
 
-  // const viewWorkouts = async () => {
-  //   try {
-  //     const response = await apiService.
-  //   }
-  // }
+  const viewWorkouts = async (programId) => {
+    if (currProgramId === programId) {
+      setCurrProgramId(null);
+      setWorkouts([]);
+      return;
+    }
 
-  // const handleDelete = async () => {
-  //   if (!window.confirm("Are you sure you want to delete this program?")) {
-  //     return
-  //   }
-  //
-  //   try {
-  //     await apiService.remove
-  //   }
-  // }
+    try {
+      setCurrProgramId(programId);
+      const response = await apiService.getWorkouts(programId);
+      setWorkouts(response.data);
+    } catch (err) {
+      console.error("Failed to retrieve workouts:", err.message);
+      alert("Failed to retrieve workouts");
+    }
+
+  };
 
   useEffect(() => {
     fetchData();
@@ -57,14 +61,27 @@ function Dashboard({ onLogout }) {
           programs.map((program) => (
             <div key={program.program_id} style={{ border: '1px solid #ccc', margin: '10px', padding: '10px' }}>
               <h3>{program.name}</h3>
+              <button onClick={() => viewWorkouts(program.program_id)}>
+                {currProgramId === program.program_id ? "Close" : "View Workouts"}</button>
               <p>{program.notes}</p>
+              {currProgramId === program.program_id &&
+                <div className="workoutDetails">
+                  {workouts.length > 0 ? (
+                    workouts.map((w) => (
+                      <div key={w.workout_id}> {w.name}: {w.notes}</div>
+                    ))
+                  ) : (
+                    <p>No workouts found</p>
+                  )}
+                </div>
+              }
             </div>
           ))
         ) : (
           <p>No programs found. Time to create one!</p>
         )}
       </div>
-    </div>
+    </div >
 
   )
 }

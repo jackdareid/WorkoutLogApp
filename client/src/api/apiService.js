@@ -45,6 +45,7 @@ export const apiService = {
     return await response.json();
   },
   getWorkouts: async (programId) => {
+    console.log(programId);
     const response = await fetch(`${URL}/programs/${programId}/workouts`, {
       method: "GET",
       headers: getHeaders(),
