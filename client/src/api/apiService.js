@@ -9,10 +9,14 @@ const getHeaders = () => {
   };
 };
 
-const handleResponse = (response) => {
+const handleResponse = async (response, defaultMessage) => {
   if (response.status == 401) {
     localStorage.removeItem("token");
     window.location.reload();
+  }
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.message || defaultMessage);
   }
   return response;
 };
@@ -25,9 +29,17 @@ export const apiService = {
       body: JSON.stringify({ email, password }),
     });
 
-    if (!response.ok) {
-      throw new Error("Login failed");
-    }
+    await handleResponse(response, "Login failed");
+
+    return await response.json();
+  },
+  createProgram: async ({ name, notes }) => {
+    const response = await fetch(`${URL}/programs/create`, {
+      method: "POST",
+      headers: getHeaders(),
+      body: JSON.stringify({ name, notes }),
+    });
+    await handleResponse(response, "Program creation failed");
 
     return await response.json();
   },
@@ -36,11 +48,7 @@ export const apiService = {
       method: "GET",
       headers: getHeaders(),
     });
-    handleResponse(response);
-
-    if (!response.ok) {
-      throw new Error("Program retrieval failed");
-    }
+    await handleResponse(response, "Program retrieval failed");
 
     return await response.json();
   },
@@ -49,11 +57,7 @@ export const apiService = {
       method: "GET",
       headers: getHeaders(),
     });
-    handleResponse(response);
-
-    if (!response.ok) {
-      throw new Error("Program workouts retreival failed");
-    }
+    await handleResponse(response, "Program workouts retrieval failed");
 
     return await response.json();
   },
@@ -65,11 +69,7 @@ export const apiService = {
         headers: getHeaders(),
       },
     );
-    handleResponse(response);
-
-    if (!response.ok) {
-      throw new Error("Workout exercise retrieval failed");
-    }
+    await handleResponse(response, "Workout exercise retrieval failed");
 
     return await response.json();
   },
@@ -81,11 +81,7 @@ export const apiService = {
         headers: getHeaders(),
       },
     );
-    handleResponse(response);
-
-    if (!response.ok) {
-      throw new Error("Workout deletion failed");
-    }
+    await handleResponse(response, "Workout deletion failed");
 
     return await response.json();
   },

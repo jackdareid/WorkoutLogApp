@@ -6,6 +6,7 @@ const {
   getWorkouts,
   getExercises,
   retrievePrograms,
+  makeProgram,
 } = require("../controllers/programController.js");
 
 const programRouter = Router();
@@ -16,7 +17,7 @@ programRouter.get("/:id/workouts", protect, getWorkouts);
 
 programRouter.get("/:id/workouts/:workout_id", protect, getExercises);
 
-// programRouter.post("/create", protect, makeProgram);
+programRouter.post("/create", protect, makeProgram);
 
 // programRouter.post("/:id/workouts", protect, addWorkout);
 

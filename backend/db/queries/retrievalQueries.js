@@ -61,7 +61,6 @@ const getPrograms = async (user_id) => {
 
   try {
     const res = await pool.query(queryText, [user_id]);
-    console.log(`Result: ${res}`);
     return res.rows;
   } catch (err) {
     console.error(`Error retrieving user programs.`);
