@@ -23,7 +23,7 @@ const retrievePrograms = async (req, res) => {
 
 const makeProgram = async (req, res) => {
   const user_id = req.user;
-  const { program_name, program_notes } = req.body;
+  const { name: program_name, notes: program_notes } = req.body;
 
   try {
     const inst = await createProgram(user_id, program_name, program_notes);

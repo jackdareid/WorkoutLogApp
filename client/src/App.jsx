@@ -12,13 +12,27 @@ function App() {
   }
 
   return (
-    <div className="App">
-      <h1>Workout Logger</h1>
-      {isLoggedIn ? (
-        <Dashboard onLogout={handleLogout} />
-      ) : (
-        <LoginPage onLogin={() => setIsLoggedIn(true)} />
-      )}
+    <div>
+      <div className="App" style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: '10px 20px'
+      }}>
+        <h1 style={{ margin: '0px' }}>Workout Logger</h1>
+        {isLoggedIn ? (
+          <button onClick={handleLogout}>Logout</button>
+        ) : (
+          <p>:)</p>
+        )}
+      </div>
+      <div>
+        {isLoggedIn ? (
+          <Dashboard />
+        ) : (
+          <LoginPage onLogin={() => setIsLoggedIn(true)} />
+        )}
+      </div>
     </div>
   )
 }

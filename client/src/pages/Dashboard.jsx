@@ -1,21 +1,23 @@
 // Dashboard.jsx
 import { useState, useEffect } from 'react';
 import { apiService } from '../api/apiService.js';
+import AddProgramForm from '../components/AddProgramForm';
 
-function Dashboard({ onLogout }) {
+function Dashboard() {
+  const [loading, setLoading] = useState(true);
   const [programs, setPrograms] = useState([]);
   const [currProgramId, setCurrProgramId] = useState(null);
   const [workouts, setWorkouts] = useState([]);
   const [currWorkoutId, setCurrWorkoutId] = useState(null);
   const [exercises, setExercises] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [showAddForm, setShowAddForm] = useState(false);
 
-  const fetchData = async () => {
+  const fetchData = async (reverse = true) => {
     if (!localStorage.getItem('token')) return;
 
     try {
       const response = await apiService.getPrograms();
-      setPrograms(response.data);
+      setPrograms(response.data.reverse());
       setLoading(false);
     } catch (err) {
 
@@ -25,6 +27,29 @@ function Dashboard({ onLogout }) {
       setLoading(false);
     }
   }
+
+  const handleShowForm = async (e) => {
+    e.preventDefault();
+    if (showAddForm) {
+      setShowAddForm(false);
+      return;
+    }
+
+    setShowAddForm(true);
+  };
+
+  const handleCreateProgram = async (newProgram) => {
+    console.log(newProgram);
+    try {
+      const response = await apiService.createProgram(newProgram);
+      setPrograms([response.data, ...programs]);
+      setShowAddForm(false);
+
+    } catch (err) {
+      console.error("Program creation failed:", err.message);
+      alert("Program creation failed")
+    }
+  };
 
   const viewWorkouts = async (programId) => {
     setExercises([]);
@@ -72,10 +97,16 @@ function Dashboard({ onLogout }) {
 
   return (
     <div style={{ padding: "20px" }}>
-      <h2>Your workout programs</h2>
-      <button onClick={onLogout} style={{ float: 'right' }}>
-        Logout
-      </button>
+      {showAddForm && <AddProgramForm onSave={handleCreateProgram} onCancel={handleShowForm} />}
+      <div style={{
+        display: 'flex',
+        justifyContent: 'flex-start',
+        gap: '20px',
+        alignItems: 'center',
+      }}>
+        <h2>Your workout programs</h2>
+        {!showAddForm && <button onClick={handleShowForm}>Create new program</button>}
+      </div>
       <div className="program-list">
         {programs.length > 0 ? (
           programs.map((program) => (
@@ -98,7 +129,7 @@ function Dashboard({ onLogout }) {
                           <div className="exerciseDetails">
                             {exercises.length > 0 ? (
                               exercises.map((e) => (
-                                <p key={e.exercise_id}>{e.name}</p>
+                                <p key={e.exercise_id}>{e.name}: {e.target_sets} sets x {e.target_reps} reps - {e.rest}s rest</p>
                               ))
                             ) : (
                               <p>No exercises found</p>
