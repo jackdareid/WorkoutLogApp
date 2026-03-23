@@ -85,4 +85,13 @@ export const apiService = {
 
     return await response.json();
   },
+  removeProgram: async (programId) => {
+    const response = await fetch(`${URL}/programs/${programId}`, {
+      method: "DELETE",
+      headers: getHeaders(),
+    });
+    await handleResponse(response, "Program deletion failed");
+
+    return await response.json();
+  },
 };
