@@ -69,32 +69,6 @@ const signupUser = async (req, res) => {
   }
 };
 
-// const mockReq = {
-//   body: {
-//     email: "testy@gmail.com",
-//     password: "fake_password!",
-//   },
-// };
-//
-// const mockRes = {
-//   // We mock the status and json methods so the code doesn't crash
-//   status: function (code) {
-//     console.log("Status:", code);
-//     return this;
-//   },
-//   json: function (data) {
-//     console.log("Response JSON:", data);
-//     return this;
-//   },
-//   send: function (msg) {
-//     console.log("Response Msg:", msg);
-//     return this;
-//   },
-// };
-//
-// const res = loginUser(mockReq, mockRes);
-// console.log(res);
-
 module.exports = {
   loginUser,
   signupUser,

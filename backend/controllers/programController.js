@@ -8,7 +8,10 @@ const {
   getProgramWorkouts,
   getWorkoutExercises,
 } = require("../db/queries/retrievalQueries.js");
-const { removeProgramWorkout } = require("../db/queries/updateQueries.js");
+const {
+  deleteProgram,
+  removeProgramWorkout,
+} = require("../db/queries/deleteQueries.js");
 
 const retrievePrograms = async (req, res) => {
   const user_id = req.user;
@@ -53,6 +56,27 @@ const addWorkout = async (req, res) => {
   }
 };
 
+const removeProgram = async (req, res) => {
+  const { id: program_id } = req.params;
+  const user_id = req.user;
+
+  console.log("ProgramID:", program_id, "UserID:", user_id);
+  try {
+    const success = await deleteProgram(user_id, program_id);
+    if (!success) {
+      return res
+        .status(404)
+        .json({ message: "Program not found / unauthorized" });
+    }
+    return res.status(200).json({ message: "Program deleted" });
+  } catch (err) {
+    console.error("Controller error:", err.message);
+    res
+      .status(500)
+      .json({ message: "Internal server error: Could not delete" });
+  }
+};
+
 const removeWorkout = async (req, res) => {
   /*
    * This function removes a workout from a program
@@ -67,10 +91,7 @@ const removeWorkout = async (req, res) => {
     await removeProgramWorkout(program_id, workout_id);
     return res.status(200).json({ message: "Workout deleted from program" });
   } catch (err) {
-    if (err.code === "23505") {
-      return res.status(409).json({ error: "Workout already in program." });
-    }
-
+    console.error("Controller error:", err.message);
     res.status(500).json({ message: "Failure: Internal server error" });
   }
 };
@@ -133,6 +154,7 @@ module.exports = {
   makeProgram,
   addWorkout,
   removeWorkout,
+  removeProgram,
   getWorkouts,
   getExercises,
   retrievePrograms,
