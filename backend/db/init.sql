@@ -24,18 +24,15 @@ CREATE TABLE workouts (
     user_id INT NOT NULL,
     name VARCHAR(100),
     notes TEXT,
-    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
-    FOREIGN KEY (program_id) REFERENCES programs(program_id) ON DELETE SET NULL
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
 CREATE TABLE program_workouts (
   program_id INT,
   workout_id INT,
-  user_id INT,
   PRIMARY KEY (program_id, workout_id),
   FOREIGN KEY (program_id) REFERENCES programs(program_id) ON DELETE CASCADE,
-  FOREIGN KEY (workout_id) REFERENCES workouts(workout_id) ON DELETE CASCADE,
-  FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+  FOREIGN KEY (workout_id) REFERENCES workouts(workout_id) ON DELETE CASCADE
 );
 
 CREATE TABLE exercises (
@@ -54,9 +51,11 @@ CREATE TABLE workout_exercises (
     order_index INT,
     target_sets INT,
     target_reps INT,
+    target_weight NUMERIC(6, 2),
+    target_duration INT,
     rest INT,
     time_flag BOOLEAN DEFAULT FALSE,
-    distance INT,
+    distance NUMERIC(6, 2),
     notes TEXT,
     FOREIGN KEY (workout_id) REFERENCES workouts(workout_id) ON DELETE CASCADE,
     FOREIGN KEY (exercise_id) REFERENCES exercises(exercise_id) ON DELETE CASCADE
@@ -88,9 +87,11 @@ CREATE TABLE completed_exercises (
 CREATE TABLE completed_sets (
     completed_set_id SERIAL PRIMARY KEY,
     completed_exercise_id INT NOT NULL,
-    weight FLOAT,
+    weight NUMERIC(6, 2),
     reps INT,
-    rpe INT,
+    distance NUMERIC(6, 2),
+    duration INT,
+    rpe NUMERIC(3, 1),
     set_number INT NOT NULL,
     FOREIGN KEY (completed_exercise_id) REFERENCES completed_exercises(completed_exercise_id) ON DELETE CASCADE
 );
@@ -99,9 +100,10 @@ CREATE TABLE user_exercise_stats (
     PRIMARY KEY (user_id, exercise_id),
     user_id INT,
     exercise_id INT,
-    calculated_max INT,
+    calculated_max NUMERIC(6, 2),
     date_last_hit TIMESTAMP,
-    all_time_best INT,
-    FOREIGN KEY (user_id) REFERENCES users(user_id),
-    FOREIGN KEY (exercise_id) REFERENCES exercises(exercise_id)
+    all_time_best NUMERIC(6, 2),
+    best_time INT, 
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (exercise_id) REFERENCES exercises(exercise_id) ON DELETE CASCADE
 );

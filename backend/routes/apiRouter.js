@@ -1,6 +1,6 @@
 // apiRouter.js
-const Router = require("express");
-const root = Router();
+const express = require("express");
+const root = express.Router();
 
 // Import routing files here
 const userRouter = require("./userRouter.js");

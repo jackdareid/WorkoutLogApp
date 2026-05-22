@@ -11,6 +11,7 @@ const getHeaders = () => {
 
 const handleResponse = async (response, defaultMessage) => {
   if (response.status == 401) {
+    // 401 = unauthorized
     localStorage.removeItem("token");
     window.location.reload();
   }
@@ -35,6 +36,16 @@ export const apiService = {
   },
   createProgram: async ({ name, notes }) => {
     const response = await fetch(`${URL}/programs/create`, {
+      method: "POST",
+      headers: getHeaders(),
+      body: JSON.stringify({ name, notes }),
+    });
+    await handleResponse(response, "Program creation failed");
+
+    return await response.json();
+  },
+  createWorkout: async ({ name, notes }) => {
+    const response = await fetch(`${URL}/workouts/create`, {
       method: "POST",
       headers: getHeaders(),
       body: JSON.stringify({ name, notes }),

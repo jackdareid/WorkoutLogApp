@@ -41,13 +41,13 @@ const makeProgram = async (req, res) => {
   }
 };
 
+// NOTE: Edited with data type change. Removed user_id from query
 const addWorkout = async (req, res) => {
   const { id: program_id } = req.params;
   const { workout_id } = req.body;
-  const user_id = req.user;
 
   try {
-    const inst = await addProgramWorkout(program_id, workout_id, user_id);
+    const inst = await addProgramWorkout(program_id, workout_id);
     return res
       .status(201)
       .json({ message: "Success: Workout added to program", data: inst });

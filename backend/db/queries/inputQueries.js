@@ -100,6 +100,7 @@ const createWorkout = async (user_id, workout_name, workout_notes) => {
 
 /**
  * Links a workout to a specific program in the database.
+ * NOTE: EDITED WITH DATATYPE CHANGES
  * * @async
  * @param {number} program_id - Unique id of the program
  * @param {number} workout_id - Unique id of the workout
@@ -107,14 +108,14 @@ const createWorkout = async (user_id, workout_name, workout_notes) => {
  * @returns {Promise<Object>} The newly created relationship record
  * @throws {Error} Throws a 23505 error if the link already exists.
  */
-const addProgramWorkout = async (program_id, workout_id, user_id) => {
+const addProgramWorkout = async (program_id, workout_id) => {
   const queryText = `
-    INSERT INTO program_workouts (program_id, workout_id, user_id)
-    VALUES ($1, $2, $3)
+    INSERT INTO program_workouts (program_id, workout_id)
+    VALUES ($1, $2)
     RETURNING *;
   `;
 
-  const values = [program_id, workout_id, user_id];
+  const values = [program_id, workout_id];
 
   try {
     const res = await pool.query(queryText, values);
@@ -127,6 +128,8 @@ const addProgramWorkout = async (program_id, workout_id, user_id) => {
 
 /**
  * Links an exercise to a user's workout.
+ * NOTE: EDITED WITH DATATYPE CHANGES
+ *
  * * @async
  * @param {Object} workoutExerciseData - Exercise Details object
  * @returns {Promise<Object>}
@@ -135,8 +138,10 @@ const createWorkoutExercises = async ({
   exercise_id,
   workout_id,
   order_index,
-  sets,
-  reps,
+  target_sets,
+  target_reps,
+  target_weight,
+  target_duration,
   rest = 60,
   time_f = false,
   distance = 0,
@@ -149,6 +154,8 @@ const createWorkoutExercises = async ({
       order_index, 
       target_sets, 
       target_reps, 
+      target_weight,
+      target_duration,
       rest, 
       time_flag, 
       distance, 
@@ -162,8 +169,10 @@ const createWorkoutExercises = async ({
     workout_id,
     exercise_id,
     order_index,
-    sets,
-    reps,
+    target_sets,
+    target_reps,
+    target_weight,
+    target_duration,
     rest,
     time_f,
     distance,
@@ -210,7 +219,7 @@ const createCompletedWorkout = async (user_id, workout_id, notes) => {
   }
 };
 
-/**
+/*
  * Creates note tracker for completed exercises.
  * * @async
  * @param {Object} exerciseNotes - contains completed exercise notes
@@ -245,6 +254,7 @@ const createCompletedExercise = async ({
 
 /**
  * This function creates a finshed set instance.
+ * NOTE: EDITED WITH DATATYPE CHANGES
  * * @async
  * @param {Object} exerciseInfo - Contains set weight, rep, rpe, and index info.
  * @returns {Promise<Object>}
@@ -253,16 +263,26 @@ const createCompletedSet = async ({
   completed_exercise_id,
   weight,
   reps,
+  distance,
+  duration,
   rpe,
   set_number,
 }) => {
   const queryText = `
-    INSERT INTO completed_sets (completed_exercise_id, weight, reps, rpe, set_number)
+    INSERT INTO completed_sets (completed_exercise_id, weight, distance, duration, reps, rpe, set_number)
     VALUES ($1, $2, $3, $4, $5)
     RETURNING *;
   `;
 
-  const values = [completed_exercise_id, weight, reps, rpe, set_number];
+  const values = [
+    completed_exercise_id,
+    weight,
+    reps,
+    distance,
+    duration,
+    rpe,
+    set_number,
+  ];
 
   try {
     const res = await pool.query(queryText, values);

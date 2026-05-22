@@ -7,12 +7,19 @@ const PORT = 3000;
 
 app.use(cors());
 app.use(express.json());
+app.get("/", (req, res) => {
+  res.json({
+    status: "success",
+    message: "Backend is up",
+    endpoints: ["/api/user", "/api/programs"],
+  });
+});
 app.use("/api", apiRouter);
 
 // // 404 Page
-// app.use((_, res) => {
-//   res.status(404).send("404 Error!");
-// });
+app.use((_, res) => {
+  res.status(404).send("404 Error!");
+});
 
 // .listen starts the server
 app.listen(PORT, () => {

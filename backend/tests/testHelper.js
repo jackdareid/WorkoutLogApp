@@ -44,12 +44,12 @@ const setupTestData = async () => {
 
     // -------------- Program Workout --------------
     const pw_script = `
-      INSERT INTO program_workouts (program_id, workout_id, user_id)
-      VALUES ($1, $2, $3)
+      INSERT INTO program_workouts (program_id, workout_id)
+      VALUES ($1, $2)
       RETURNING *;
     `;
 
-    await pool.query(pw_script, [1, 1, 1]);
+    await pool.query(pw_script, [1, 1]);
 
     // -------------- Exercise --------------
     const exercise_script = `
@@ -103,5 +103,7 @@ const setupTestData = async () => {
     console.error("Error seeding test database:", err);
   }
 };
+
+setupTestData();
 
 module.exports = { setupTestData };

@@ -57,7 +57,6 @@ function Dashboard() {
     }
   }
 
-
   useEffect(() => {
     fetchData();
   }, []);

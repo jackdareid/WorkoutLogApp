@@ -19,6 +19,7 @@ function App() {
         alignItems: 'center',
         padding: '10px 20px'
       }}>
+        {/* Logout handler   */}
         <h1 style={{ margin: '0px' }}>Workout Logger</h1>
         {isLoggedIn ? (
           <button onClick={handleLogout}>Logout</button>
@@ -27,6 +28,7 @@ function App() {
         )}
       </div>
       <div>
+        {/* Main contents handler  */}
         {isLoggedIn ? (
           <Dashboard />
         ) : (
