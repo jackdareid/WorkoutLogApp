@@ -86,16 +86,14 @@ describe("addProgramWorkout", () => {
     // Arrange
     const program_id = 1;
     const workout_id = 1;
-    const user_id = 1;
 
     // Act
-    const result = await addProgramWorkout(program_id, workout_id, user_id);
+    const result = await addProgramWorkout(program_id, workout_id);
 
     // Assert
     expect(result).toBeDefined();
     expect(result.program_id).toBe(program_id);
     expect(result.workout_id).toBe(workout_id);
-    expect(result.user_id).toBe(user_id);
   });
 
   test("Should fail: adding same workout to program twice.", async () => {
@@ -104,12 +102,11 @@ describe("addProgramWorkout", () => {
     // Arrange
     const program_id = 1;
     const workout_id = 1;
-    const user_id = 1;
 
     // Act
-    await addProgramWorkout(program_id, workout_id, user_id);
+    await addProgramWorkout(program_id, workout_id);
     try {
-      await addProgramWorkout(program_id, workout_id, user_id);
+      await addProgramWorkout(program_id, workout_id);
     } catch (err) {
       // Assert
       expect(err.code).toBe("23505");
@@ -121,7 +118,7 @@ describe("addProgramWorkout", () => {
     const bad_id = 1000;
 
     // Act / Assert
-    await expect(addProgramWorkout(bad_id, 1, 1)).rejects.toMatchObject({
+    await expect(addProgramWorkout(bad_id, 1)).rejects.toMatchObject({
       code: "23503",
     });
   });
@@ -134,8 +131,10 @@ describe("createWorkoutExercises", () => {
       exercise_id: 1,
       workout_id: 1,
       order_index: 1,
-      sets: 3,
-      reps: 12,
+      target_sets: 3,
+      target_reps: 12,
+      target_weight: 100,
+      target_duration: 0,
       // Others have defaults
     };
 
@@ -156,8 +155,10 @@ describe("createWorkoutExercises", () => {
       exercise_id: 1,
       workout_id: 1,
       order_index: 1,
-      sets: 3,
-      reps: 12,
+      target_sets: 3,
+      target_reps: 12,
+      target_weight: 100,
+      target_duration: 0,
       // Others have defaults
     };
 
@@ -179,6 +180,8 @@ describe("createCompletedSet", () => {
       completed_exercise_id: 1,
       weight: 225,
       reps: 10,
+      distance: 0,
+      duration: 0,
       rpe: 7,
       set_number: 2,
     };
@@ -198,6 +201,8 @@ describe("createCompletedSet", () => {
       completed_exercise_id: 1,
       weight: 225,
       reps: 10,
+      distance: 0,
+      duration: 0,
       rpe: 7,
       set_number: 2,
     };
