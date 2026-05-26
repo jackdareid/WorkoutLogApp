@@ -87,7 +87,6 @@ const getMe = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-
     const { password_hash, ...user_data } = user;
 
     return res.status(200).json({ data: user_data });

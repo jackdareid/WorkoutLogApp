@@ -1,15 +1,11 @@
 // App.jsx
-import { useState } from 'react';
 import LoginPage from './pages/LoginPage';
 import Dashboard from './pages/Dashboard';
+import { useAuth } from './context/AuthContext';
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('token'));
-
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    setIsLoggedIn(false);
-  }
+  // Global state for controlling login context
+  const { token, logout } = useAuth();
 
   return (
     <div>
@@ -21,18 +17,18 @@ function App() {
       }}>
         {/* Logout handler   */}
         <h1 style={{ margin: '0px' }}>Workout Logger</h1>
-        {isLoggedIn ? (
-          <button onClick={handleLogout}>Logout</button>
+        {token ? (
+          <button onClick={logout}>Logout</button>
         ) : (
           <p>:)</p>
         )}
       </div>
       <div>
         {/* Main contents handler  */}
-        {isLoggedIn ? (
+        {token ? (
           <Dashboard />
         ) : (
-          <LoginPage onLogin={() => setIsLoggedIn(true)} />
+          <LoginPage />
         )}
       </div>
     </div>

@@ -117,10 +117,12 @@ export const apiService = {
     return await response.json();
   },
   getMe: async () => {
+    console.log(`${URL}/user/me`);
     const response = await fetch(`${URL}/user/me`, {
       method: "GET",
       headers: getHeaders(),
     });
+    console.log(response);
     await handleResponse(response, "Get me failed");
 
     return await response.json();

@@ -38,8 +38,7 @@ export const AuthProvider = ({ children }) => {
   }, [token]);
 
   // Setting "Global" authority states here
-  const login = (jwtToken, userData) => {
-    setUser(userData);
+  const login = (jwtToken) => {
     setToken(jwtToken);
   };
 
@@ -54,4 +53,6 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   )
 };
+
+export const useAuth = () => useContext(AuthContext);
 

@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { apiService } from '../api/apiService.js';
+import { useAuth } from '../context/AuthContext.jsx';
 
-function LoginPage({ onLogin }) {
+function LoginPage() {
+  const { login, logout } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -11,8 +13,7 @@ function LoginPage({ onLogin }) {
     // Login 
     try {
       const { token } = await apiService.login(email, password)
-      localStorage.setItem('token', token);
-      onLogin();
+      login(token);
       alert("Login successful!");
 
     } catch (err) {

@@ -10,15 +10,15 @@ const {
   removeProgram,
 } = require("../controllers/programController.js");
 
-const router = Router();
-router.use(protect);
+const programRouter = Router();
+programRouter.use(protect);
 
-router.get("/", retrievePrograms);
-router.post("/create", makeProgram);
-router.delete("/:id", removeProgram);
-router.get("/:id/workouts", getWorkouts);
-router.get("/:id/workouts/:workout_id", getExercises);
-// router.post("/:id/workouts", addWorkout);
-router.delete("/:id/workouts/:workout_id", removeWorkout);
+programRouter.get("/", retrievePrograms);
+programRouter.post("/create", makeProgram);
+programRouter.delete("/:id", removeProgram);
+programRouter.get("/:id/workouts", getWorkouts);
+programRouter.get("/:id/workouts/:workout_id", getExercises);
+// programRouter.post("/:id/workouts", addWorkout);
+programRouter.delete("/:id/workouts/:workout_id", removeWorkout);
 
-module.exports = router;
+module.exports = programRouter;

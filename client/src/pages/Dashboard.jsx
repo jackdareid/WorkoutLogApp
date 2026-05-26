@@ -3,25 +3,27 @@ import { useState, useEffect } from 'react';
 import { apiService } from '../api/apiService.js';
 import AddProgramForm from '../components/AddProgramForm';
 import ProgramCard from '../components/ProgramCard';
+import { useAuth } from '../context/AuthContext';
 
 function Dashboard() {
-  const [loading, setLoading] = useState(true);
+  const { token, user } = useAuth();
+  const [loadingP, setLoadingP] = useState(true);
   const [programs, setPrograms] = useState([]);
   const [showAddForm, setShowAddForm] = useState(false);
 
   const fetchData = async (reverse = true) => {
-    if (!localStorage.getItem('token')) return;
+    if (!token) return;
 
     try {
       const response = await apiService.getPrograms();
       setPrograms([...response.data].reverse());
-      setLoading(false);
+      setLoadingP(false);
     } catch (err) {
 
-      if (localStorage.getItem('token')) {
+      if (token) {
         alert("Failed to load programs");
       }
-      setLoading(false);
+      setLoadingP(false);
     }
   }
 
@@ -61,7 +63,7 @@ function Dashboard() {
     fetchData();
   }, []);
 
-  if (loading) {
+  if (loadingP) {
     return <p>Loading your programs...</p>;
   }
 
@@ -74,7 +76,7 @@ function Dashboard() {
         gap: '20px',
         alignItems: 'center',
       }}>
-        <h2>Your workout programs</h2>
+        <h2>{user ? `${user.f_name}'s` : 'Your'} workout programs</h2>
         {!showAddForm && <button onClick={handleShowForm}>Create new program</button>}
       </div>
       <div className="program-list">
