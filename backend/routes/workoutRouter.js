@@ -3,12 +3,10 @@ const { Router } = require("express");
 const { protect } = require("../middleware/authMiddleware.js");
 const { createWorkoutShell } = require("../controllers/workoutController.js");
 
-const workoutRouter = Router();
+const router = Router();
 
-workoutRouter.post("/create", protect, createWorkoutShell);
+router.use(protect);
 
-workoutRouter.post("/track", (req, res) => {
-  // controller
-});
+router.post("/create", createWorkoutShell);
 
-module.exports = workoutRouter;
+module.exports = router;

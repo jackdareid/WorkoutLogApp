@@ -25,6 +25,17 @@ const getUserData = async (email) => {
   }
 };
 
+const getUserById = async (user_id) => {
+  const sql = `
+    SELECT user_id, f_name, l_name, email, password_hash
+    FROM users
+    WHERE user_id = $1;
+  `;
+
+  const result = await pool.query(sql, [user_id]);
+  return result.rows[0];
+};
+
 // 1.1. Check if email is in DB
 const checkEmail = async (email) => {
   /*
@@ -240,6 +251,7 @@ const getLoginInfo = async (email) => {
 
 module.exports = {
   getUserData,
+  getUserById,
   checkEmail,
   getPrograms,
   getUserWorkouts,

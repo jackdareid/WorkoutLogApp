@@ -1,5 +1,15 @@
 const path = require("path");
 const { Pool } = require("pg");
+const pg = require("pg");
+
+// 1700 is the Object identifier (OID) for PSQL's NUMERIC type
+const NUMERIC_OID = 1700;
+
+pg.types.setTypeParser(NUMERIC_OID, (value) => {
+  // If db value is null, return null, otherwise convert to float
+  return value === null ? null : parseFloat(value);
+});
+
 require("dotenv").config({
   // Auto connect to test db when using jest
   // path: process.env.NODE_ENV === "test" ? ".env.test" : ".env",

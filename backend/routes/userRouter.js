@@ -1,17 +1,16 @@
 // routes/userRouter.js
 const { Router } = require("express");
 
-const userRouter = Router();
-const { loginUser, signupUser } = require("../controllers/userController.js");
+const router = Router();
+const {
+  loginUser,
+  signupUser,
+  getMe,
+} = require("../controllers/userController.js");
+const { protect } = require("../middleware/authMiddleware.js");
 
-userRouter.post("/login", loginUser);
+router.post("/login", loginUser);
+router.post("/signup", signupUser);
+router.get("/me", protect, getMe);
 
-// userRouter.get("/signup", (req, res) => {
-//   res.send({ title: "So this is the sign up page eh?" });
-// });
-//
-// userRouter.post("/signup", (req, res) => {
-//   signupUser(req, res);
-// });
-
-module.exports = userRouter;
+module.exports = router;

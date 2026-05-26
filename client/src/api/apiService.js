@@ -23,6 +23,17 @@ const handleResponse = async (response, defaultMessage) => {
 };
 
 export const apiService = {
+  signup: async (f_name, l_name, email, password) => {
+    const response = await fetch(`${URL}/user/signup`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ f_name, l_name, email, password }),
+    });
+
+    await handleResponse(response, "Sign up failed");
+
+    return await response.json();
+  },
   login: async (email, password) => {
     const response = await fetch(`${URL}/user/login`, {
       method: "POST",
@@ -102,6 +113,15 @@ export const apiService = {
       headers: getHeaders(),
     });
     await handleResponse(response, "Program deletion failed");
+
+    return await response.json();
+  },
+  getMe: async () => {
+    const response = await fetch(`${URL}/user/me`, {
+      method: "GET",
+      headers: getHeaders(),
+    });
+    await handleResponse(response, "Get me failed");
 
     return await response.json();
   },
