@@ -35,8 +35,6 @@ export const apiService = {
     return await response.json();
   },
   login: async (email, password) => {
-    console.log("Apiservice email: ", email);
-    console.log("Apiservice password: ", password);
     const response = await fetch(`${URL}/user/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -53,7 +51,7 @@ export const apiService = {
       headers: getHeaders(),
       body: JSON.stringify({ name, notes }),
     });
-    await handleResponse(response, "Program creation failed");
+    await handleResponse(response, "Program creation failed (apiService.js)");
 
     return await response.json();
   },

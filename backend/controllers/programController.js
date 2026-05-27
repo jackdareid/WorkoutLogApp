@@ -14,7 +14,7 @@ const {
 } = require("../db/queries/deleteQueries.js");
 
 const retrievePrograms = async (req, res) => {
-  const user_id = req.user;
+  const user_id = req.user_id;
 
   try {
     const programs = await getPrograms(user_id);
@@ -25,11 +25,14 @@ const retrievePrograms = async (req, res) => {
 };
 
 const makeProgram = async (req, res) => {
-  const user_id = req.user;
-  const { name: program_name, notes: program_notes } = req.body;
+  const user_id = req.user_id;
+  const { name, notes } = req.body;
+  console.log("Program name: ", name);
+  console.log("Program notes: ", notes);
+  console.log("user_id: ", user_id);
 
   try {
-    const inst = await createProgram(user_id, program_name, program_notes);
+    const inst = await createProgram(user_id, name, notes);
     return res
       .status(201)
       .json({ message: "Program creation successful", data: inst });
@@ -58,7 +61,7 @@ const addWorkout = async (req, res) => {
 
 const removeProgram = async (req, res) => {
   const { id: program_id } = req.params;
-  const user_id = req.user;
+  const user_id = req.user_id;
 
   console.log("ProgramID:", program_id, "UserID:", user_id);
   try {
