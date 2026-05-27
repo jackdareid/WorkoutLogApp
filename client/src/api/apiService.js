@@ -23,7 +23,7 @@ const handleResponse = async (response, defaultMessage) => {
 };
 
 export const apiService = {
-  signup: async (f_name, l_name, email, password) => {
+  signUp: async (f_name, l_name, email, password) => {
     const response = await fetch(`${URL}/user/signup`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -35,6 +35,8 @@ export const apiService = {
     return await response.json();
   },
   login: async (email, password) => {
+    console.log("Apiservice email: ", email);
+    console.log("Apiservice password: ", password);
     const response = await fetch(`${URL}/user/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -122,7 +124,7 @@ export const apiService = {
       method: "GET",
       headers: getHeaders(),
     });
-    console.log(response);
+    // console.log(response);
     await handleResponse(response, "Get me failed");
 
     return await response.json();

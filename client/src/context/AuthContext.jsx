@@ -19,14 +19,15 @@ export const AuthProvider = ({ children }) => {
     const authorize = async () => {
       if (token) {
         try {
-          const result = await apiService.getMe();
-          if (result && result.data) {
-            setUser(result.data);
-            localStorage.setItem('token', token);
-          } else {
+          // Get user data
+          // const result = await apiService.getMe();
+          // if (result && result.data) {
+          //   setUser(result.data);
+          if (!user) {
             logout();
           }
         } catch (err) {
+          console.log("Authorization error:", err.message);
           logout();
         }
       } else {
@@ -38,11 +39,15 @@ export const AuthProvider = ({ children }) => {
   }, [token]);
 
   // Setting "Global" authority states here
-  const login = (jwtToken) => {
-    setToken(jwtToken);
+  const login = async ({ token, data }) => {
+    localStorage.setItem('token', token);
+    setToken(data);
+    setUser(data);
   };
 
-  const logout = () => {
+  const logout = async () => {
+    console.log("Logging out!");
+    localStorage.removeItem('token');
     setUser(null);
     setToken(null);
   };

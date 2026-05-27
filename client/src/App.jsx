@@ -1,11 +1,14 @@
 // App.jsx
 import LoginPage from './pages/LoginPage';
+import { Navigate, Outlet } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
 import { useAuth } from './context/AuthContext';
 
 function App() {
   // Global state for controlling login context
-  const { token, logout } = useAuth();
+  const { token, logout, loading } = useAuth();
+
+  if (loading) return <div>Loading...</div>;
 
   return (
     <div>
@@ -20,15 +23,14 @@ function App() {
         {token ? (
           <button onClick={logout}>Logout</button>
         ) : (
-          <p>:)</p>
+          <p>Please sign in</p>
         )}
       </div>
-      <div>
-        {/* Main contents handler  */}
+      <div style={{ padding: '20px' }}>
         {token ? (
           <Dashboard />
         ) : (
-          <LoginPage />
+          <Outlet />
         )}
       </div>
     </div>
