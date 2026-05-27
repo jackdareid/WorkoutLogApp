@@ -1,6 +1,5 @@
 // db/queries/inputQueries.js
 const pool = require("../poolConnection.js");
-const bcrypt = require("bcrypt");
 
 /**
  * This function creates a new user.
@@ -12,16 +11,15 @@ const bcrypt = require("bcrypt");
  * @returns {Promise<Object>} - Created user instance
  * @throws {Error} If db fails to query.
  */
-const createUser = async (first_name, last_name, email, password) => {
+const createUser = async (first_name, last_name, email, hashed_password) => {
   const queryText = `
     INSERT INTO users (f_name, l_name, email, password_hash)
     VALUES
     ($1, $2, $3, $4)
-    RETURNING f_name, l_name, date_joined, email;
+    RETURNING user_id, f_name, l_name, date_joined, email;
   `;
 
   try {
-    const hashed_password = await bcrypt.hash(password, 10);
     const values = [first_name, last_name, email, hashed_password];
 
     const res = await pool.query(queryText, values);

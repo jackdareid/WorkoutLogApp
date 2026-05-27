@@ -1,20 +1,27 @@
+// LoginPage.jsx
 import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { apiService } from '../api/apiService.js';
 import { useAuth } from '../context/AuthContext.jsx';
 
 function LoginPage() {
-  const { login, logout } = useAuth();
+  const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate()
 
   const handleLogin = async (event) => {
     event.preventDefault(); // So the page doesn't refresh (Commenting for my learning)
 
     // Login 
     try {
-      const { token } = await apiService.login(email, password)
-      login(token);
+      const obj = await apiService.login(email, password)
+      console.log("Login email: ", email)
+      console.log("Login password: ", password)
+      await login(obj);
       alert("Login successful!");
+
+      navigate("/api", { replace: true })
 
     } catch (err) {
       console.error("Failed to login:", err.message);
@@ -43,6 +50,10 @@ function LoginPage() {
           />
         </div>
         <button type="submit">Login</button>
+        <p>
+          {/* Don't have an account? <a href="/api/signup">Sign up here</a> */}
+          Don't have an account? <Link to="/api/signup">Sign up here</Link>
+        </p>
       </form >
     </div >
   );
