@@ -1,10 +1,14 @@
+// main.jsx
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { ProtectedRoute } from './components/ProtectedRoute.jsx';
 import App from './App.jsx';
 import LoginPage from './pages/LoginPage.jsx';
 import SignUpPage from './pages/SignUpPage.jsx';
+import Dashboard from './pages/Dashboard.jsx';
+import HomePage from './pages/HomePage.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -12,12 +16,20 @@ createRoot(document.getElementById('root')).render(
       <BrowserRouter>
         <Routes>
           <Route path="/api" element={<App />} >
-            <Route index element={<Navigate to="login" replace />} />
+            {/* Guarded from public access */}
+            <Route element={<ProtectedRoute />}>
+              <Route index element={<HomePage />} />
+              <Route path="Dashboard" element={<Dashboard />} />
+            </Route>
+            {/* Publicly accessible */}
             <Route path="login" element={<LoginPage />} />
             <Route path="signup" element={<SignUpPage />} />
+
+            {/* Catch all */}
+            <Route path="*" element={<Navigate to="/api" replace />} />
           </Route>
         </Routes>
       </BrowserRouter>
     </AuthProvider>
-  </StrictMode>,
+  </StrictMode >,
 )

@@ -1,8 +1,6 @@
 // App.jsx
-import LoginPage from './pages/LoginPage';
 import { Navigate, Outlet } from 'react-router-dom';
-import Dashboard from './pages/Dashboard';
-import { useAuth } from './context/AuthContext';
+import { useAuth } from './context/AuthContext.jsx';
 
 function App() {
   // Global state for controlling login context
@@ -27,11 +25,7 @@ function App() {
         )}
       </div>
       <div style={{ padding: '20px' }}>
-        {token ? (
-          <Dashboard />
-        ) : (
-          <Outlet />
-        )}
+        <Outlet />
       </div>
     </div>
   )
