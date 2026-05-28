@@ -25,32 +25,14 @@ const createToken = (id) => {
  */
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
-  console.log("userController email: ", email);
-  console.log("userController password: ", password);
 
   try {
     const user = await getLoginInfo(email);
     if (!user) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
-    // Test
-    console.log(
-      "userController post 1 await user: ",
-      user,
-      "and the password_hash: ",
-      user.password_hash,
-    );
-
-    console.log("PASSWORD RAW:", JSON.stringify(password));
-    console.log("PASSWORD LENGTH:", password.length);
-
-    // End test
 
     const verify_user = await bcrypt.compare(password, user.password_hash);
-
-    //Test
-    console.log("Verify user? Is it true? ", verify_user);
-    //End test
 
     if (verify_user) {
       const { password_hash, ...user_data } = user;
@@ -78,15 +60,10 @@ const loginUser = async (req, res) => {
  */
 const signupUser = async (req, res) => {
   const { f_name, l_name, email, password } = req.body;
-  console.log("PASSWORD RAW:", JSON.stringify(password));
-  console.log("PASSWORD LENGTH:", password.length);
 
   try {
     const hashed_password = await bcrypt.hash(password, SALT_ROUNDS);
     const obj = await createUser(f_name, l_name, email, hashed_password);
-
-    // Test
-    console.log(await bcrypt.compare(password, hashed_password));
 
     const token = createToken(obj.user_id);
 
