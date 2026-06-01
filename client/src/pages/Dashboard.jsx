@@ -3,14 +3,14 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { apiService } from '../api/apiService.js';
 import { useAuth } from '../context/AuthContext';
-import AddProgramForm from '../components/AddProgramForm';
+// import AddProgramForm from '../components/AddProgramForm';
 import ProgramCard from '../components/ProgramCard';
 
 function Dashboard() {
   const { token, user } = useAuth();
   const [loadingP, setLoadingP] = useState(true);
   const [programs, setPrograms] = useState([]);
-  const [showAddForm, setShowAddForm] = useState(false);
+  // const [showAddForm, setShowAddForm] = useState(false);
 
   const fetchData = async (reverse = true) => {
     if (!token) return;
@@ -28,27 +28,27 @@ function Dashboard() {
     }
   }
 
-  const handleShowForm = async (e) => {
-    e.preventDefault();
-    if (showAddForm) {
-      setShowAddForm(false);
-      return;
-    }
+  // const handleShowForm = async (e) => {
+  //   e.preventDefault();
+  //   if (showAddForm) {
+  //     setShowAddForm(false);
+  //     return;
+  //   }
+  //
+  //   setShowAddForm(true);
+  // };
 
-    setShowAddForm(true);
-  };
-
-  const handleCreateProgram = async (newProgram) => {
-    try {
-      const response = await apiService.createProgram(newProgram);
-      setPrograms([response.data, ...programs]);
-      setShowAddForm(false);
-
-    } catch (err) {
-      console.error("Program creation failed (Dashboard.jsx):", err.message);
-      alert("Program creation failed")
-    }
-  };
+  // const handleCreateProgram = async (newProgram) => {
+  //   try {
+  //     const response = await apiService.createProgram(newProgram);
+  //     setPrograms([response.data, ...programs]);
+  //     setShowAddForm(false);
+  //
+  //   } catch (err) {
+  //     console.error("Program creation failed (Dashboard.jsx):", err.message);
+  //     alert("Program creation failed")
+  //   }
+  // };
 
   const handleDeleteProgram = async (programId) => {
     try {
@@ -90,7 +90,7 @@ function Dashboard() {
         </div>
       </div>
       <div style={{ padding: "20px" }}>
-        {showAddForm && <AddProgramForm onSave={handleCreateProgram} onCancel={handleShowForm} />}
+        {/* {showAddForm && <AddProgramForm onSave={handleCreateProgram} onCancel={handleShowForm} />} */}
         <div style={{
           display: 'flex',
           justifyContent: 'flex-start',
@@ -98,7 +98,8 @@ function Dashboard() {
           alignItems: 'center',
         }}>
           <h2>{user ? `${user.f_name}'s` : 'Your'} workout programs</h2>
-          {!showAddForm && <button onClick={handleShowForm}>Create new program</button>}
+          {/* {!showAddForm && <button onClick={handleShowForm}>Create new program</button>} */}
+          <Link to="/api/programs/create">Create new program</Link>
         </div>
         <div className="program-list">
           {programs.length > 0 ? (
