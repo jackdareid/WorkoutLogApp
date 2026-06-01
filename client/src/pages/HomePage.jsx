@@ -12,7 +12,7 @@ function HomePage() {
 
       <div style={{ marginTop: '25px' }}>
         <Link
-          to="/api/dashboard"
+          to="/api/programs"
           style={{
             padding: '10px 20px',
             backgroundColor: '#007bff',
@@ -22,7 +22,7 @@ function HomePage() {
             fontWeight: 'bold'
           }}
         >
-          Go to Dashboard
+          Go to Programs
         </Link>
       </div>
     </div>
