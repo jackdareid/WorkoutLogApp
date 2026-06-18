@@ -87,9 +87,9 @@ function CreateProgramPage() {
     e.preventDefault();
 
     try {
+      await apiService.createProgram(programData);
       console.log("Submitting program payload: ", programData);
-
-      alert("Success!");
+      alert("Program compiled and saved!");
 
       navigate("/api/programs");
     } catch (err) {

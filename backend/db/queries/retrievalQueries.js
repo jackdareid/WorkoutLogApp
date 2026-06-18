@@ -225,6 +225,43 @@ const getExercises = async () => {
   }
 };
 
+const getExerciseById = async (id) => {
+  const sql = `
+    SELECT * FROM exercises 
+    WHERE exercise_id = $1
+  `;
+
+  try {
+    const res = await pool.query(sql, [id]);
+    return res.rows[0];
+  } catch (err) {
+    console.error(
+      "Fatal Database Error retrieving exercise by id: ",
+      err.message,
+    );
+    throw err;
+  }
+};
+
+const getExerciseByName = async (name) => {
+  const sql = `
+    SELECT * FROM exercises 
+    WHERE name = $1
+  `;
+
+  try {
+    const res = await pool.query(sql, [name]);
+    // If found, exercise is returned. If not, undefined is returned.
+    return res.rows[0];
+  } catch (err) {
+    console.error(
+      "Fatal Database Error retrieving exercise by name:",
+      err.message,
+    );
+    throw err;
+  }
+};
+
 // 7. Retrieve user info for login
 const getLoginInfo = async (email) => {
   /*
@@ -259,5 +296,7 @@ module.exports = {
   getWorkoutExercises,
   getPreviousWorkout,
   getExercises,
+  getExerciseById,
+  getExerciseByName,
   getLoginInfo,
 };

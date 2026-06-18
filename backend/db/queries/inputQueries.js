@@ -159,7 +159,7 @@ const createWorkoutExercises = async ({
       distance, 
       notes
     )
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
     RETURNING *;
   `;
 
@@ -213,6 +213,33 @@ const createCompletedWorkout = async (user_id, workout_id, notes) => {
     console.error("Completed workout creation failed:", err.message);
 
     // Throw err for api response
+    throw err;
+  }
+};
+/**
+ * This function creates a custom exercise for the user.
+ *
+ */
+const createUserExercise = async (
+  user_id,
+  exercise_name,
+  muscle_group = null,
+  notes = null,
+  // client,
+) => {
+  const sql = `
+    INSERT INTO exercises (user_id, name, muscle_group, notes)
+    VALUES ($1, $2, $3, $4)
+    RETURNING *;
+  `;
+  const values = [user_id, exercise_name, muscle_group, notes];
+  console.log(`Values: ${values}`);
+
+  try {
+    const res = await pool.query(sql, values);
+    return res.rows[0];
+  } catch (err) {
+    console.error(`Exercise creation failure: ${err.message}`);
     throw err;
   }
 };
@@ -300,6 +327,7 @@ module.exports = {
   createUser,
   createProgram,
   createWorkout,
+  createUserExercise,
   createWorkoutExercises,
   createCompletedWorkout,
   createCompletedExercise,

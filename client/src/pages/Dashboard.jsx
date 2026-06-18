@@ -28,28 +28,6 @@ function Dashboard() {
     }
   }
 
-  // const handleShowForm = async (e) => {
-  //   e.preventDefault();
-  //   if (showAddForm) {
-  //     setShowAddForm(false);
-  //     return;
-  //   }
-  //
-  //   setShowAddForm(true);
-  // };
-
-  // const handleCreateProgram = async (newProgram) => {
-  //   try {
-  //     const response = await apiService.createProgram(newProgram);
-  //     setPrograms([response.data, ...programs]);
-  //     setShowAddForm(false);
-  //
-  //   } catch (err) {
-  //     console.error("Program creation failed (Dashboard.jsx):", err.message);
-  //     alert("Program creation failed")
-  //   }
-  // };
-
   const handleDeleteProgram = async (programId) => {
     try {
       await apiService.removeProgram(programId);
@@ -90,7 +68,6 @@ function Dashboard() {
         </div>
       </div>
       <div style={{ padding: "20px" }}>
-        {/* {showAddForm && <AddProgramForm onSave={handleCreateProgram} onCancel={handleShowForm} />} */}
         <div style={{
           display: 'flex',
           justifyContent: 'flex-start',
@@ -98,7 +75,6 @@ function Dashboard() {
           alignItems: 'center',
         }}>
           <h2>{user ? `${user.f_name}'s` : 'Your'} workout programs</h2>
-          {/* {!showAddForm && <button onClick={handleShowForm}>Create new program</button>} */}
           <Link to="/api/programs/create">Create new program</Link>
         </div>
         <div className="program-list">
@@ -120,3 +96,4 @@ function Dashboard() {
 }
 
 export default Dashboard;
+
