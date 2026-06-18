@@ -12,6 +12,7 @@ const {
   deleteProgram,
   removeProgramWorkout,
 } = require("../db/queries/deleteQueries.js");
+const compileWorkout = require("../controllers/workoutController.js");
 
 const retrievePrograms = async (req, res) => {
   const user_id = req.user_id;
@@ -25,14 +26,20 @@ const retrievePrograms = async (req, res) => {
 };
 
 const makeProgram = async (req, res) => {
+  // const client = await pool.connect()
+
   const user_id = req.user_id;
-  const { name, notes } = req.body;
-  console.log("Program name: ", name);
-  console.log("Program notes: ", notes);
-  console.log("user_id: ", user_id);
+  console.log("User_id: ", user_id);
+  const { name: programName, description: programDesc } = req.body;
+
+  console.log("Program Name: ", programName);
+  console.log("Program Description: ", programDesc);
+  const workout_ids = await compileWorkout(user_id, req.body.workouts);
+  console.log("Workout ids: ", workout_ids);
 
   try {
-    const inst = await createProgram(user_id, name, notes);
+    const inst = await createProgram(user_id, programName, programDesc);
+    for (id of workout_ids) await addWorkout(inst.program_id, id);
     return res
       .status(201)
       .json({ message: "Program creation successful", data: inst });
@@ -40,22 +47,19 @@ const makeProgram = async (req, res) => {
     if (err.code === "23505") {
       return res.status(409).json({ message: "Name already in use" });
     }
-    return res.status(500).json({ message: "Internal server error" });
+    return res
+      .status(500)
+      .json({ message: `Internal server error: ${err.message}` });
   }
 };
 
 // NOTE: Edited with data type change. Removed user_id from query
-const addWorkout = async (req, res) => {
-  const { id: program_id } = req.params;
-  const { workout_id } = req.body;
-
+const addWorkout = async (program_id, workout_id) => {
   try {
-    const inst = await addProgramWorkout(program_id, workout_id);
-    return res
-      .status(201)
-      .json({ message: "Success: Workout added to program", data: inst });
+    await addProgramWorkout(program_id, workout_id);
   } catch (err) {
-    return res.status(500).json({ message: "Failure: Internal server error" });
+    console.error("Failure adding workouts to program: ", err.message);
+    throw err;
   }
 };
 

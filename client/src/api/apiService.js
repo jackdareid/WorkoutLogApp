@@ -45,11 +45,11 @@ export const apiService = {
 
     return await response.json();
   },
-  createProgram: async ({ name, notes }) => {
+  createProgram: async (programData) => {
     const response = await fetch(`${URL}/programs/create`, {
       method: "POST",
       headers: getHeaders(),
-      body: JSON.stringify({ name, notes }),
+      body: JSON.stringify(programData),
     });
     await handleResponse(response, "Program creation failed (apiService.js)");
 
