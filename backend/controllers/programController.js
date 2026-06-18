@@ -26,19 +26,18 @@ const retrievePrograms = async (req, res) => {
 };
 
 const makeProgram = async (req, res) => {
+  // Use separate client so that the pool is only opened and closed once.
   // const client = await pool.connect()
 
   const user_id = req.user_id;
-  console.log("User_id: ", user_id);
   const { name: programName, description: programDesc } = req.body;
 
-  console.log("Program Name: ", programName);
-  console.log("Program Description: ", programDesc);
-  const workout_ids = await compileWorkout(user_id, req.body.workouts);
-  console.log("Workout ids: ", workout_ids);
-
   try {
+    // Create workouts for the program and return the workout ids for linking
+    const workout_ids = await compileWorkout(user_id, req.body.workouts);
+    // Create program
     const inst = await createProgram(user_id, programName, programDesc);
+    // Link workouts to program
     for (id of workout_ids) await addWorkout(inst.program_id, id);
     return res
       .status(201)
