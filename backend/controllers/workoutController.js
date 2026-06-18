@@ -10,65 +10,92 @@ const {
   getExerciseByName,
 } = require("../db/queries/retrievalQueries.js");
 
-const createWorkoutShell = async (user_id, workout_name, workout_notes) => {
-  const shell = await createWorkout(user_id, workout_name, workout_notes);
-  // Check if shell isn't correct or whatever
-  return shell;
-};
-
-const linkWorkoutExercises = async (user_id, w_id, exercises) => {
-  for (let i = 0; i < exercises.length; i++) {
-    const { name, target_sets, target_reps, target_rest } = exercises[i];
-    console.log("Processing exercise payload item:", exercises[i]);
-
-    let exercise = await getExerciseByName(name);
-    // console.log(`Final exercise id = ${finalExerciseId}`);
-    if (!exercise) {
-      exercise = await createExercise(user_id, name);
-    }
-    console.log(`Exercise: ${exercise}, exercise_id: ${exercise.exercise_id}`);
-
-    await createWorkoutExercises({
-      exercise_id: exercise.exercise_id,
-      workout_id: w_id,
-      order_index: i + 1,
-      target_sets,
-      target_reps,
-      target_weight: 0,
-      target_duration: 0,
-      target_rest,
-      time_f: false,
-      distance: 0,
-      notes: "None",
-    });
-  }
-};
-
+/**
+ * This function creates a custom user exercise if the user enters an exercise
+ * name that isn't in the database.
+ *
+ * Returns the exercise instance.
+ */
 const createExercise = async (user_id, exercise_name) => {
-  console.log(`User id: ${user_id}, exercise name: ${exercise_name}`);
   try {
     const exercise = await createUserExercise(user_id, exercise_name);
     return exercise;
   } catch (err) {
-    console.error(`Database error: ${err.message}`);
+    console.error(`Database error creating exercise: ${err.message}`);
     throw err;
   }
 };
 
-const compileWorkout = async (user_id, workouts) => {
-  console.log("Compile workout user_id: ", user_id);
-  const workout_ids = [];
-  for (const w of workouts) {
-    console.log("Compiling workout routine row: ", w.name);
-
-    const w_shell = await createWorkoutShell(user_id, w.name, w.notes);
-    workout_ids.push(w_shell.workout_id);
-    console.log("Workout ids: ", workout_ids);
-
-    await linkWorkoutExercises(user_id, w_shell.workout_id, w.exercises);
+/**
+ * This function creates a workout entity that exercises can be added to, and that can
+ * be linked to a program entity.
+ *
+ * Returns the workout entity.
+ */
+const createWorkoutShell = async (user_id, workout_name, workout_notes) => {
+  try {
+    const shell = await createWorkout(user_id, workout_name, workout_notes);
+    return shell;
+  } catch (err) {
+    console.error("Error creating workout shell: ", err.message);
+    throw err;
   }
+};
 
-  return workout_ids;
+/**
+ * This function links exercises to a workout shell.
+ *
+ * Returns nothing.
+ */
+const linkWorkoutExercises = async (user_id, w_id, exercises) => {
+  for (let i = 0; i < exercises.length; i++) {
+    const { name, target_sets, target_reps, target_rest } = exercises[i];
+
+    try {
+      let exercise = await getExerciseByName(name);
+
+      if (!exercise) {
+        // Create exercise in database
+        exercise = await createExercise(user_id, name);
+      }
+
+      // Create link between exercise and workout
+      await createWorkoutExercises({
+        exercise_id: exercise.exercise_id,
+        workout_id: w_id,
+        order_index: i + 1,
+        target_sets,
+        target_reps,
+        target_weight: 0,
+        target_duration: 0,
+        target_rest,
+        time_f: false,
+        distance: 0,
+        notes: "None",
+      });
+    } catch (err) {
+      console.error("Error linking exercise to workout: ", err.message);
+      throw err;
+    }
+  }
+};
+
+const compileWorkout = async (user_id, workouts) => {
+  const workout_ids = [];
+  try {
+    for (const w of workouts) {
+      const w_shell = await createWorkoutShell(user_id, w.name, w.notes);
+      workout_ids.push(w_shell.workout_id);
+      console.log("Workout ids: ", workout_ids);
+
+      await linkWorkoutExercises(user_id, w_shell.workout_id, w.exercises);
+    }
+
+    return workout_ids;
+  } catch (err) {
+    console.error("Error compiling workout: ", err.message);
+    throw err;
+  }
 };
 
 module.exports = compileWorkout;
