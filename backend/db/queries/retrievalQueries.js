@@ -243,13 +243,17 @@ const getExerciseById = async (id) => {
   }
 };
 
-const getExerciseByName = async (name) => {
+const getExerciseByName = async (name, client) => {
   const sql = `
     SELECT * FROM exercises 
     WHERE name = $1
   `;
 
   try {
+    if (client) {
+      const res = await client.query(sql, [name]);
+      return res.rows[0];
+    }
     const res = await pool.query(sql, [name]);
     // If found, exercise is returned. If not, undefined is returned.
     return res.rows[0];
