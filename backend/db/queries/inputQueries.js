@@ -45,7 +45,7 @@ const createUser = async (first_name, last_name, email, hashed_password) => {
  * @returns {Promise<Object>} Returns program instance
  * @throws {Error} If db fails to query
  */
-const createProgram = async (user_id, program_name, program_notes) => {
+const createProgram = async (user_id, program_name, program_notes, client) => {
   const queryText = `
     INSERT INTO programs (user_id, name, notes)
     VALUES ($1, $2, $3)
@@ -55,9 +55,14 @@ const createProgram = async (user_id, program_name, program_notes) => {
   const values = [user_id, program_name, program_notes];
 
   try {
-    const res = await pool.query(queryText, values);
+    // If there's a separate client
+    if (client) {
+      const res = await client.query(queryText, values);
+      return res.rows[0];
+    }
 
-    // Return program data
+    // If using general pool
+    const res = await pool.query(queryText, values);
     return res.rows[0];
   } catch (err) {
     console.error("Program creation failed:", err.message);
@@ -106,7 +111,7 @@ const createWorkout = async (user_id, workout_name, workout_notes) => {
  * @returns {Promise<Object>} The newly created relationship record
  * @throws {Error} Throws a 23505 error if the link already exists.
  */
-const addProgramWorkout = async (program_id, workout_id) => {
+const addProgramWorkout = async (program_id, workout_id, client) => {
   const queryText = `
     INSERT INTO program_workouts (program_id, workout_id)
     VALUES ($1, $2)
@@ -116,6 +121,10 @@ const addProgramWorkout = async (program_id, workout_id) => {
   const values = [program_id, workout_id];
 
   try {
+    if (client) {
+      const res = await client.query(queryText, values);
+      return res.rows[0];
+    }
     const res = await pool.query(queryText, values);
     return res.rows[0];
   } catch (err) {
@@ -132,19 +141,22 @@ const addProgramWorkout = async (program_id, workout_id) => {
  * @param {Object} workoutExerciseData - Exercise Details object
  * @returns {Promise<Object>}
  */
-const createWorkoutExercises = async ({
-  exercise_id,
-  workout_id,
-  order_index,
-  target_sets,
-  target_reps,
-  target_weight,
-  target_duration,
-  rest = 60,
-  time_f = false,
-  distance = 0,
-  notes = "",
-}) => {
+const createWorkoutExercises = async (
+  {
+    exercise_id,
+    workout_id,
+    order_index,
+    target_sets,
+    target_reps,
+    target_weight,
+    target_duration,
+    rest = 60,
+    time_f = false,
+    distance = 0,
+    notes = "",
+  },
+  client,
+) => {
   const queryText = `
     INSERT INTO workout_exercises (
       workout_id, 
@@ -178,6 +190,10 @@ const createWorkoutExercises = async ({
   ];
 
   try {
+    if (client) {
+      const res = await client.query(queryText, values);
+      return res.rows[0];
+    }
     const res = await pool.query(queryText, values);
     return res.rows[0];
   } catch (err) {
@@ -225,7 +241,7 @@ const createUserExercise = async (
   exercise_name,
   muscle_group = null,
   notes = null,
-  // client,
+  client,
 ) => {
   const sql = `
     INSERT INTO exercises (user_id, name, muscle_group, notes)
@@ -236,6 +252,10 @@ const createUserExercise = async (
   console.log(`Values: ${values}`);
 
   try {
+    if (client) {
+      const res = await client.query(sql, values);
+      return res.rows[0];
+    }
     const res = await pool.query(sql, values);
     return res.rows[0];
   } catch (err) {
