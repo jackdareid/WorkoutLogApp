@@ -1,4 +1,6 @@
 //controllers/programController.js
+const pool = require("../db/poolConnection.js");
+
 const {
   createProgram,
   addProgramWorkout,
@@ -26,36 +28,48 @@ const retrievePrograms = async (req, res) => {
 };
 
 const makeProgram = async (req, res) => {
-  // Use separate client so that the pool is only opened and closed once.
-  // const client = await pool.connect()
-
   const user_id = req.user_id;
-  const { name: programName, description: programDesc } = req.body;
+  const { name: programName, description: programDesc, workouts } = req.body;
+
+  const client = await pool.connect();
 
   try {
+    await client.query("BEGIN");
+
+    const inst = await createProgram(user_id, programName, programDesc, client);
     // Create workouts for the program and return the workout ids for linking
-    const workout_ids = await compileWorkout(user_id, req.body.workouts);
-    // Create program
-    const inst = await createProgram(user_id, programName, programDesc);
+    // NEED TO FIX BELOW FOR NEW CLIENT
+    const workout_ids = await compileWorkout(user_id, workouts, client);
     // Link workouts to program
-    for (id of workout_ids) await addWorkout(inst.program_id, id);
+    for (const id of workout_ids) {
+      await addWorkout(inst.program_id, id, client);
+    }
+
+    await client.query("COMMIT");
+
     return res
       .status(201)
       .json({ message: "Program creation successful", data: inst });
   } catch (err) {
+    await client.query("ROLLBACK");
+
+    console.error("Transaction aborted. Rolling back changes:", err.message);
+
     if (err.code === "23505") {
       return res.status(409).json({ message: "Name already in use" });
     }
     return res
       .status(500)
       .json({ message: `Internal server error: ${err.message}` });
+  } finally {
+    client.release();
   }
 };
 
 // NOTE: Edited with data type change. Removed user_id from query
-const addWorkout = async (program_id, workout_id) => {
+const addWorkout = async (program_id, workout_id, client) => {
   try {
-    await addProgramWorkout(program_id, workout_id);
+    await addProgramWorkout(program_id, workout_id, client);
   } catch (err) {
     console.error("Failure adding workouts to program: ", err.message);
     throw err;
