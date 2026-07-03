@@ -1,7 +1,3 @@
----
-
-### `docs/roadmap.md`
-
 ```md
 # WorkoutLogApp Roadmap
 
@@ -23,7 +19,7 @@
 
 - Dockerize backend
 - Dockerize frontend
-- Add Docker compose
+- Add Docker Compose
 - Run PostgreSQL locally through containers
 
 ## Sprint 4: AWS Deployment
@@ -35,11 +31,11 @@
 
 ## Sprint 5: CI/CD
 
-- Add GitHub actions
+- Add GitHub Actions
 - Run tests automatically
 - Automate deployment workflow
 
-## Future improvements
+## Future Improvements
 
 - Refresh token authentication
 - Password reset

@@ -56,4 +56,4 @@ Protected backend routes validate token
 
 - PostgreSQL is used because the data is relational and benefits from structured queries.
 - JWT authentication is used to support stateless API authentication.
-- The app currently uses a monolithic backend architecture fro simplicity and maintainability.
+- The app currently uses a monolithic backend architecture for simplicity and maintainability.
