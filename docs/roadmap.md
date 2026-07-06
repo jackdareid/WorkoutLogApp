@@ -1,4 +1,3 @@
-```md
 # WorkoutLogApp Roadmap
 
 ## Sprint 1: Project Foundation
@@ -43,4 +42,3 @@
 - Redis caching
 - Workout analytics
 - API documentation with Swagger/OpenAPI
-```
