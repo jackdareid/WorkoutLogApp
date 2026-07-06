@@ -6,6 +6,17 @@ This project serves both as a practical fitness application and as a long-term e
 
 ---
 
+| Status         | Active Development |
+| -------------- | ------------------ |
+| Frontend       | React              |
+| Backend        | Express            |
+| Database       | PostgreSQL         |
+| Authentication | JWT                |
+| Deployment     | Planned (AWS)      |
+| License        | MIT                |
+
+---
+
 ## Project Status
 
 Active Development
