@@ -7,29 +7,74 @@ WorkoutLogApp is a full-stack workout tracking platform with a React frontend, E
 ## System Architecture
 
 ```text
-User
-  |
-  v
-React Frontend
-  |
-  v
-Express REST API
-  |
-  v
-PostgreSQL Database
+                 Browser
+                    │
+                    ▼
+             React Frontend
+                    │
+          HTTPS / REST API
+                    │
+                    ▼
+              Express Server
+                    │
+      ┌─────────────┴─────────────┐
+      │                           │
+Authentication              Business Logic
+      │                           │
+      └─────────────┬─────────────┘
+                    │
+                    ▼
+              PostgreSQL
 ```
 
 ## Frontend
 
-The frontend is responsible for user interaction, authentication state, and displaying workout-related data.
+The React frontend is responsible for:
 
-## Backend
+- User authentication
+- Displaying workout data
+- Creating workout programs
+- Managing authentication state
+- Communicating with the backend through REST APIs
 
-The backend exposes REST API endpoints for authentication, users, workouts, programs, and related resources.
+## Backend Architecture
+
+```text
+Request
+  |
+  v
+Router
+  |
+  v
+Middleware
+  |
+  v
+Controller
+  |
+  v
+Database Layer
+  |
+  v
+PostgreSQL
+```
 
 ## Database
 
-PostgreSQL stores users, workouts, exercises, programs, exercise tracking data, and authentication-related data.
+```text
+Users
+
+↓
+
+Programs
+
+↓
+
+Program Workouts
+
+↓
+
+Workouts
+```
 
 ## Authentication Flow
 
@@ -40,20 +85,78 @@ User submits login credentials
 Backend validates credentials
   |
   v
-Backend signs JWT
+Backend signs JWT with 24h expiration
   |
   v
-Frontend stores JWT
+Frontend stores token
   |
   v
-Frontend sends JWT in Authorization header
+Frontend sends token in Authorization header
   |
   v
 Protected backend routes validate token
 ```
 
+---
+
 ## Key Design Decisions
 
-- PostgreSQL is used because the data is relational and benefits from structured queries.
-- JWT authentication is used to support stateless API authentication.
-- The app currently uses a monolithic backend architecture for simplicity and maintainability.
+### Why PostgreSQL?
+
+PostgreSQL was chosen because the core data model is relational. Users, programs, workouts, exercises, and logged workout data all have clear relationships that benefit from structured schemas, joins, constraints, and query optimizations.
+
+### Why JWT?
+
+JWT authentication was chosen to support stateless API authentication between the React frontend and Express backend. This keeps protected backend routes independent of server-side session storage and works well with a REST API structure.
+
+Current limitation: the application uses a 24-hour JWT expiration. A future authentication sprint will introduce refresh tokens, token rotation, and improved logout/session invalidation.
+
+### Why REST instead of GraphQL?
+
+REST was chosen because the application currently has straightforward resource-based operations such as users, programs, and workouts. REST keeps the API simple, predictable and easy to test while the project is still evolving.
+
+GraphQL may be considered later if the frontend begins requiring more complex, flexible querying across related workout, exercise, and analytics data.
+
+### Why a Monolith?
+
+The backend currently uses a monolithic Express architecture because the project is still early-stage and benefits from simplicity. Keeping routes, middleware, controllers, and database access in one backend service makes the system easier to develop, test, debug, and deploy.
+
+A distributed or microservice architecture would add unnecessary complexity at this stage. If the project grows significantly, specific responsibilities such as analytics, notifications, or background jobs could be separated later.
+
+---
+
+## Current Technical Debt
+
+- JWTs are currently implemented with a 24-hour expiration.
+- Refresh tokens and token rotation are planned for a future security-focused sprint.
+- The application is not containerized yet.
+- Deployment is not yet production-ready.
+- API documentation is not yet generated with OpenAPI/Swagger.
+
+## Planned Architecture
+
+```text
+                 Browser
+                    │
+                    ▼
+             React Frontend
+                    │
+              HTTPS / REST API
+                    │
+                    ▼
+              Express Server
+                    │
+      ┌─────────────┴─────────────┐
+      │                           │
+ PostgreSQL Database        Redis Cache
+      │
+      ▼
+ Application Data
+
+GitHub Actions
+      │
+      ▼
+ AWS Deployment
+
+Docker / Docker Compose will be used to containerize the frontend, backend, and database for consistent local development and deployment.
+```
