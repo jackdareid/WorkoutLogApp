@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const config = require("../config/index.js");
 const {
   getLoginInfo,
   getUserById,
@@ -9,8 +10,8 @@ const { createUser } = require("../db/queries/inputQueries.js");
 const SALT_ROUNDS = 10;
 
 const createToken = (id) => {
-  return jwt.sign({ user_id: id }, process.env.JWT_SECRET, {
-    expiresIn: "24h",
+  return jwt.sign({ user_id: id }, config.auth.jwtSecret, {
+    expiresIn: config.auth.jwtExpiresIn,
   });
 };
 

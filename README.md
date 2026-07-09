@@ -124,7 +124,9 @@ cd ../backend
 npm install
 ```
 
-3. Set up servers
+3. Copy `.env.example` to `.env` inside the `backend/` directory
+
+4. Set up servers
 
 Open two terminals
 
@@ -142,7 +144,7 @@ cd backend
 npm run dev
 ```
 
-4. Visit website
+5. Visit website
    http://localhost:5173/
 
 ---
