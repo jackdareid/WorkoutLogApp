@@ -15,10 +15,11 @@
   "type": "commonjs",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js",
-    "dev": "nodemon app.js",
-    "test": "NODE_ENV=test jest --watch --runInBand",
-    "testAll": "NODE_ENV=test jest --runInBand --verbose"
+    "dev": "NODE_ENV=development nodemon app.js",
+    "test": "NODE_ENV=test jest",
+    "test:watch": "NODE_ENV=test jest --watch",
+    "test:verbose": "NODE_ENV=test jest --runInBand --verbose",
+    "start": "NODE_ENV=production node app.js"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",

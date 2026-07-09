@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const config = require("../config");
 
 const protect = async (req, res, next) => {
   let token;
@@ -10,12 +11,11 @@ const protect = async (req, res, next) => {
     try {
       token = req.headers.authorization.split(" ")[1];
 
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const decoded = jwt.verify(token, config.auth.jwtSecret);
       req.user_id = decoded.user_id;
 
       return next();
     } catch (err) {
-      console.error("Not authorized:", err.message);
       res.status(401).json({
         message: "Not authorized, token failed.",
         error: err.message,
