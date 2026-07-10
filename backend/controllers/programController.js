@@ -1,5 +1,9 @@
 //controllers/programController.js
 const pool = require("../db/poolConnection.js");
+const BadRequestError = require("../errors/BadRequestError");
+const ConflictError = require("../errors/ConflictError");
+const NotFoundError = require("../errors/NotFoundError");
+const UnauthorizedError = require("../errors/UnauthorizedError");
 
 const {
   createProgram,
@@ -84,9 +88,7 @@ const removeProgram = async (req, res) => {
   try {
     const success = await deleteProgram(user_id, program_id);
     if (!success) {
-      return res
-        .status(404)
-        .json({ message: "Program not found / unauthorized" });
+      return res.status(404).json({ message: "Program not found" });
     }
     return res.status(200).json({ message: "Program deleted" });
   } catch (err) {
@@ -129,10 +131,10 @@ const getWorkouts = async (req, res) => {
 
   try {
     const workouts = await getProgramWorkouts(program_id);
-    if (!workouts || workouts.length == 0) {
+    if (workouts.length == 0) {
       return res
-        .status(404)
-        .json({ message: "No workouts found for this program" });
+        .status(200)
+        .json({ message: "No workouts found for this program", data: [] });
     }
     return res
       .status(200)
@@ -158,7 +160,7 @@ const getExercises = async (req, res) => {
     const exercises = await getWorkoutExercises(workout_id);
     if (!exercises || exercises.length == 0) {
       return res
-        .status(404)
+        .status(200)
         .json({ message: "No exercises found for this workout" });
     }
     return res

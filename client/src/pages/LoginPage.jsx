@@ -11,21 +11,17 @@ function LoginPage() {
   const navigate = useNavigate()
 
   const handleLogin = async (event) => {
-    event.preventDefault(); // So the page doesn't refresh (Commenting for my learning)
+    event.preventDefault();
 
-    // Login 
     try {
-      const obj = await apiService.login(email, password)
-      console.log("Login email: ", email)
-      console.log("Login password: ", password)
-      await login(obj);
-      alert("Login successful!");
+      const data = await apiService.login(email, password)
+      console.log(data);
 
-      navigate("/api", { replace: true })
+      await login(data);
 
+      navigate("/", { replace: true })
     } catch (err) {
-      console.error("Failed to login:", err.message);
-      alert("Login failed!");
+      console.error("Failed to login:", err);
     }
   };
 
@@ -51,8 +47,8 @@ function LoginPage() {
         </div>
         <button type="submit">Login</button>
         <p>
-          {/* Don't have an account? <a href="/api/signup">Sign up here</a> */}
-          Don't have an account? <Link to="/api/signup">Sign up here</Link>
+          {/* Don't have an account? <a href="/signup">Sign up here</a> */}
+          Don't have an account? <Link to="/signup">Sign up here</Link>
         </p>
       </form >
     </div >

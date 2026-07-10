@@ -1,3 +1,7 @@
+const BadRequestError = require("../errors/BadRequestError");
+const ConflictError = require("../errors/ConflictError");
+const NotFoundError = require("../errors/NotFoundError");
+const UnauthorizedError = require("../errors/UnauthorizedError");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const config = require("../config/index.js");
@@ -24,18 +28,19 @@ const createToken = (id) => {
  *
  * Returns: json user data
  */
-const loginUser = async (req, res) => {
+const loginUser = async (req, res, next) => {
   const { email, password } = req.body;
 
   try {
     const user = await getLoginInfo(email);
     if (!user) {
-      return res.status(401).json({ message: "Invalid email or password" });
+      // return res.status(404).json({ message: "User not found" });
+      return next(new UnauthorizedError("Invalid email or password"));
     }
 
-    const verify_user = await bcrypt.compare(password, user.password_hash);
+    const verifyUser = await bcrypt.compare(password, user.password_hash);
 
-    if (verify_user) {
+    if (verifyUser) {
       const { password_hash, ...user_data } = user;
       const token = createToken(user.user_id);
 
@@ -44,9 +49,11 @@ const loginUser = async (req, res) => {
         .json({ message: "Login successful", token, data: user_data });
     }
 
-    return res.status(401).json({ message: "Invalid email or password" });
+    // return res.status(401).json({ message: "Invalid email or password" });
+    return next(new UnauthorizedError("Invalid email or password"));
   } catch (err) {
-    res.status(500).json({ error: "Internal server error" });
+    // res.status(500).json({ error: "Internal server error" });
+    return next(err);
   }
 };
 

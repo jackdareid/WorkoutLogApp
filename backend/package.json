@@ -15,11 +15,11 @@
   "type": "commonjs",
   "main": "app.js",
   "scripts": {
-    "dev": "NODE_ENV=development nodemon app.js",
+    "dev": "NODE_ENV=development nodemon server.js",
     "test": "NODE_ENV=test jest",
     "test:watch": "NODE_ENV=test jest --watch",
     "test:verbose": "NODE_ENV=test jest --runInBand --verbose",
-    "start": "NODE_ENV=production node app.js"
+    "start": "NODE_ENV=production node server.js"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
@@ -31,6 +31,7 @@
   },
   "devDependencies": {
     "jest": "^30.2.0",
-    "nodemon": "^3.1.11"
+    "nodemon": "^3.1.11",
+    "supertest": "^7.2.2"
   }
 }

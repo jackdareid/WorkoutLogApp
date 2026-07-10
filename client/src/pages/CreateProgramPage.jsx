@@ -91,7 +91,7 @@ function CreateProgramPage() {
       console.log("Submitting program payload: ", programData);
       alert("Program compiled and saved!");
 
-      navigate("/api/programs");
+      navigate("/programs");
     } catch (err) {
       console.error("Failed to build program:", err.message);
     }
@@ -101,7 +101,7 @@ function CreateProgramPage() {
     <div style={{ maxWidth: '750px', margin: '0 auto', padding: '10px' }}>
       {/* Upper Navigation Anchor */}
       <div style={{ marginBottom: '20px' }}>
-        <Link to="/api/programs" style={{ color: '#6c757d', textDecoration: 'none', fontWeight: '600', border: '1px solid black' }}>
+        <Link to="/programs" style={{ color: '#6c757d', textDecoration: 'none', fontWeight: '600', border: '1px solid black' }}>
           Cancel and Return to Programs
         </Link>
       </div>

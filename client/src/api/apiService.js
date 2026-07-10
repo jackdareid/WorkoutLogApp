@@ -9,6 +9,15 @@ const getHeaders = () => {
   };
 };
 
+/*
+ * When a protected request return 401, clear the stored authentication and
+ * redirect the user.
+ */
+const handleUnauthorized = async () => {
+  localStorage.removeItem("token");
+  // TODO
+};
+
 const handleResponse = async (response, defaultMessage) => {
   if (response.status == 401) {
     // 401 = unauthorized

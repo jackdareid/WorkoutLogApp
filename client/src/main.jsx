@@ -16,7 +16,7 @@ createRoot(document.getElementById('root')).render(
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/api" element={<App />} >
+          <Route path="/" element={<App />} >
             {/* Guarded from public access */}
             <Route element={<ProtectedRoute />}>
               <Route index element={<HomePage />} />
@@ -29,7 +29,7 @@ createRoot(document.getElementById('root')).render(
             <Route path="signup" element={<SignUpPage />} />
 
             {/* Catch all */}
-            <Route path="*" element={<Navigate to="/api" replace />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Route>
         </Routes>
       </BrowserRouter>

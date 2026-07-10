@@ -9,7 +9,7 @@ export const ProtectedRoute = () => {
 
   if (!token) {
     console.log("Hit!");
-    return <Navigate to="/api/login" replace />;
+    return <Navigate to="/login" replace />;
   }
 
   return <Outlet />;
