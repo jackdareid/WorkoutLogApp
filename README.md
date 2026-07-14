@@ -49,7 +49,9 @@ Technical:
 - PostgreSQL relational database
 - Input validation
 - Protected API routes
-- Unit testing with Jest
+- Centralized Express error handling with custom error classes
+- Jest and Supertest integration testing
+- Separate development and test database configuration
 
 ---
 

@@ -1,7 +1,5 @@
 const request = require("supertest");
-const jwt = require("jsonwebtoken");
 const app = require("../app");
-const config = require("../config");
 const { setupTestData, endTesting } = require("./testHelper");
 
 beforeAll(async () => {
@@ -72,6 +70,34 @@ it("returns status code 201 on successful program creation", async () => {
     .set("Authorization", `Bearer ${token}`)
     .send({
       name: "Another Test Program",
+      description: "This is a test program",
+      workouts,
+    });
+  expect(response.status).toBe(201);
+  expect(response.body.message).toBe("Program creation successful");
+});
+it("returns status code 201 on successful program creation, even with new exercise", async () => {
+  const exercise1 = {
+    name: "Hack Squat",
+    target_sets: 3,
+    target_reps: 8,
+    target_rest: 90,
+  };
+
+  const token = await getToken();
+
+  const workout1 = {
+    name: "Test Workout9",
+    notes: "Test workout notes",
+    exercises: [exercise1],
+  };
+  const workouts = [workout1];
+
+  const response = await request(app)
+    .post("/api/programs/create")
+    .set("Authorization", `Bearer ${token}`)
+    .send({
+      name: "Yet Another Test Program",
       description: "This is a test program",
       workouts,
     });

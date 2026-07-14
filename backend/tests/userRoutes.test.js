@@ -2,7 +2,7 @@ const request = require("supertest");
 const jwt = require("jsonwebtoken");
 const app = require("../app");
 const config = require("../config");
-const { setupTestData } = require("./testHelper");
+const { setupTestData, endTesting } = require("./testHelper");
 
 beforeAll(async () => {
   await setupTestData();
@@ -88,4 +88,8 @@ it("returns 404 if user_id not found", async () => {
     .set("Authorization", `Bearer ${token}`);
   expect(response.status).toBe(404);
   expect(response.body.message).toBe("User not found");
+});
+
+afterAll(async () => {
+  endTesting();
 });
