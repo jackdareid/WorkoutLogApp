@@ -20,18 +20,18 @@ const {
 } = require("../db/queries/deleteQueries.js");
 const compileWorkout = require("../controllers/workoutController.js");
 
-const retrievePrograms = async (req, res) => {
+const retrievePrograms = async (req, res, next) => {
   const user_id = req.user_id;
 
   try {
     const programs = await getPrograms(user_id);
     return res.status(200).json({ data: programs });
   } catch (err) {
-    return res.status(500).json({ message: "Failure: Internal server error" });
+    return next(err);
   }
 };
 
-const makeProgram = async (req, res) => {
+const makeProgram = async (req, res, next) => {
   const user_id = req.user_id;
   const { name: programName, description: programDesc, workouts } = req.body;
 
@@ -41,10 +41,7 @@ const makeProgram = async (req, res) => {
     await client.query("BEGIN");
 
     const inst = await createProgram(user_id, programName, programDesc, client);
-    // Create workouts for the program and return the workout ids for linking
-    // NEED TO FIX BELOW FOR NEW CLIENT
     const workout_ids = await compileWorkout(user_id, workouts, client);
-    // Link workouts to program
     for (const id of workout_ids) {
       await addWorkout(inst.program_id, id, client);
     }
@@ -57,14 +54,10 @@ const makeProgram = async (req, res) => {
   } catch (err) {
     await client.query("ROLLBACK");
 
-    console.error("Transaction aborted. Rolling back changes:", err.message);
-
     if (err.code === "23505") {
-      return res.status(409).json({ message: "Name already in use" });
+      return next(new ConflictError("Program name already in use"));
     }
-    return res
-      .status(500)
-      .json({ message: `Internal server error: ${err.message}` });
+    return next(err);
   } finally {
     client.release();
   }

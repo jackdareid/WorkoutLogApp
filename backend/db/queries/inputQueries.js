@@ -19,21 +19,10 @@ const createUser = async (first_name, last_name, email, hashed_password) => {
     RETURNING user_id, f_name, l_name, date_joined, email;
   `;
 
-  try {
-    const values = [first_name, last_name, email, hashed_password];
+  const values = [first_name, last_name, email, hashed_password];
+  const res = await pool.query(queryText, values);
 
-    const res = await pool.query(queryText, values);
-    return res.rows[0];
-  } catch (err) {
-    // 23505 is a Unique Violation error
-    if (err.code === "23505") {
-      console.error("User creation failed: email already exists");
-    } else {
-      console.error("Database error during user creation:", err.message);
-    }
-
-    throw err;
-  }
+  return res.rows[0];
 };
 
 /**
@@ -65,9 +54,6 @@ const createProgram = async (user_id, program_name, program_notes, client) => {
     const res = await pool.query(queryText, values);
     return res.rows[0];
   } catch (err) {
-    console.error("Program creation failed:", err.message);
-
-    // Throw for API response
     throw err;
   }
 };

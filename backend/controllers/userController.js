@@ -34,7 +34,6 @@ const loginUser = async (req, res, next) => {
   try {
     const user = await getLoginInfo(email);
     if (!user) {
-      // return res.status(404).json({ message: "User not found" });
       return next(new UnauthorizedError("Invalid email or password"));
     }
 
@@ -49,10 +48,8 @@ const loginUser = async (req, res, next) => {
         .json({ message: "Login successful", token, data: user_data });
     }
 
-    // return res.status(401).json({ message: "Invalid email or password" });
     return next(new UnauthorizedError("Invalid email or password"));
   } catch (err) {
-    // res.status(500).json({ error: "Internal server error" });
     return next(err);
   }
 };
@@ -66,7 +63,7 @@ const loginUser = async (req, res, next) => {
  *
  * Returns: user instance
  */
-const signupUser = async (req, res) => {
+const signupUser = async (req, res, next) => {
   const { f_name, l_name, email, password } = req.body;
 
   try {
@@ -77,31 +74,31 @@ const signupUser = async (req, res) => {
 
     return res
       .status(201)
-      .json({ message: "Successfully created user!", token, data: obj });
+      .json({ message: "Successfully created user", token, data: obj });
   } catch (err) {
     if (err.code === "23505") {
-      return res.status(409).json({ error: "Email already in use" });
+      return next(new ConflictError("Email already in use"));
     }
-    res.status(500).json({ error: "Internal server error" });
+    return next(err);
   }
 };
 
-const getMe = async (req, res) => {
-  try {
-    const user_id = req.user_id;
-    console.log("User ID:", user_id);
+const getMe = async (req, res, next) => {
+  const user_id = req.user_id;
 
-    // Get user info from user_id
+  try {
     const user = await getUserById(user_id);
+
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      // return res.status(404).json({ message: "User not found" });
+      return next(new NotFoundError("User not found"));
     }
     const { password_hash, ...user_data } = user;
 
-    return res.status(200).json({ data: user_data });
+    return res.status(200).json({ message: "User found", data: user_data });
   } catch (err) {
-    console.error("Error in getMe controller:", err);
-    res.status(500).json({ error: "Internal server error" });
+    // res.status(500).json({ error: "Internal server error" });
+    return next(err);
   }
 };
 
