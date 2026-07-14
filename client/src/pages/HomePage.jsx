@@ -12,7 +12,7 @@ function HomePage() {
 
       <div style={{ marginTop: '25px' }}>
         <Link
-          to="/api/programs"
+          to="/programs"
           style={{
             padding: '10px 20px',
             backgroundColor: '#007bff',

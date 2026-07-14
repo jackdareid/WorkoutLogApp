@@ -45,7 +45,7 @@ function SignUpPage() {
         password: '',
         password_conf: ''
       });
-      navigate("/api", { replace: true });
+      navigate("/", { replace: true });
     } catch (err) {
 
       setError(err.message || "Sign up failed");

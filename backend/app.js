@@ -1,27 +1,29 @@
 // app.js
 const express = require("express");
-const app = express();
 const cors = require("cors");
-const apiRouter = require("./routes/apiRouter.js");
-const PORT = 3000;
+const apiRouter = require("./routes/apiRouter");
+const handleError = require("./middleware/errorMiddleware");
+const NotFoundError = require("./errors/NotFoundError");
+const config = require("./config");
+
+const app = express();
 
 app.use(cors());
 app.use(express.json());
 app.get("/", (req, res) => {
   res.json({
-    status: "success",
-    message: "Backend is up",
-    endpoints: ["/api/user", "/api/programs"],
+    status: "ok",
+    service: "WorkoutLogApp API",
+    version: "1.0.0",
+    environment: config.server.environment,
   });
 });
 app.use("/api", apiRouter);
 
-// // 404 Page
-app.use((_, res) => {
-  res.status(404).send("404 Error!");
+app.use((_, next) => {
+  next(new NotFoundError("Route not found"));
 });
 
-// .listen starts the server
-app.listen(PORT, () => {
-  console.log(`Server listening at http://localhost:${PORT}`);
-});
+app.use(handleError);
+
+module.exports = app;

@@ -27,8 +27,7 @@ const createExercise = async (user_id, exercise_name, client) => {
     );
     return exercise;
   } catch (err) {
-    console.error(`Database error creating exercise: ${err.message}`);
-    throw err;
+    return next(err);
   }
 };
 

@@ -51,7 +51,7 @@ function Dashboard() {
       <div style={{ padding: '20px' }}>
         <div style={{ marginBottom: '20px' }}>
           <Link
-            to="/api"
+            to="/"
             style={{
               display: 'inline-block',
               padding: '8px 16px',
@@ -75,7 +75,7 @@ function Dashboard() {
           alignItems: 'center',
         }}>
           <h2>{user ? `${user.f_name}'s` : 'Your'} workout programs</h2>
-          <Link to="/api/programs/create">Create new program</Link>
+          <Link to="/programs/create">Create new program</Link>
         </div>
         <div className="program-list">
           {programs.length > 0 ? (

@@ -46,7 +46,7 @@ Request
 Router
   |
   v
-Middleware
+Auth / Validation Middleware
   |
   v
 Controller
@@ -96,6 +96,15 @@ Frontend sends token in Authorization header
   v
 Protected backend routes validate token
 ```
+
+---
+
+## Error Handling
+
+- Controllers forward errors using `next(error)`.
+- Expected application errors use custom AppError subclasses.
+- Supported errors currently include 400, 401, 404, and 409
+- Unexpected errors return a generic 500 response
 
 ---
 

@@ -1,12 +1,13 @@
 const jwt = require("jsonwebtoken");
 const config = require("../config");
+const UnauthorizedError = require("../errors/UnauthorizedError");
 
-const protect = async (req, res, next) => {
+const protect = (req, res, next) => {
   let token;
 
   if (
     req.headers.authorization &&
-    req.headers.authorization.startsWith("Bearer")
+    req.headers.authorization.startsWith("Bearer ")
   ) {
     try {
       token = req.headers.authorization.split(" ")[1];
@@ -16,17 +17,12 @@ const protect = async (req, res, next) => {
 
       return next();
     } catch (err) {
-      res.status(401).json({
-        message: "Not authorized, token failed.",
-        error: err.message,
-      });
+      return next(new UnauthorizedError("Not authorized, token failed"));
     }
   }
 
   if (!token) {
-    return res
-      .status(401)
-      .json({ message: "Not authorized, no token provided." });
+    return next(new UnauthorizedError("Not authorized, no token provided"));
   }
 };
 
