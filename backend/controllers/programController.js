@@ -13,6 +13,8 @@ const {
   getPrograms,
   getProgramWorkouts,
   getWorkoutExercises,
+  workoutExistsForProgram,
+  programExistsForUser,
 } = require("../db/queries/retrievalQueries.js");
 const {
   deleteProgram,
@@ -28,6 +30,14 @@ const retrievePrograms = async (req, res, next) => {
     return res.status(200).json({ data: programs });
   } catch (err) {
     return next(err);
+  }
+};
+
+const addWorkout = async (program_id, workout_id, client) => {
+  try {
+    await addProgramWorkout(program_id, workout_id, client);
+  } catch (err) {
+    throw err;
   }
 };
 
@@ -63,36 +73,22 @@ const makeProgram = async (req, res, next) => {
   }
 };
 
-// NOTE: Edited with data type change. Removed user_id from query
-const addWorkout = async (program_id, workout_id, client) => {
-  try {
-    await addProgramWorkout(program_id, workout_id, client);
-  } catch (err) {
-    console.error("Failure adding workouts to program: ", err.message);
-    throw err;
-  }
-};
-
-const removeProgram = async (req, res) => {
+const removeProgram = async (req, res, next) => {
   const { id: program_id } = req.params;
   const user_id = req.user_id;
 
-  console.log("ProgramID:", program_id, "UserID:", user_id);
   try {
-    const success = await deleteProgram(user_id, program_id);
-    if (!success) {
-      return res.status(404).json({ message: "Program not found" });
+    const response = await deleteProgram(user_id, program_id);
+    if (!response) {
+      return next(new NotFoundError("Program not found"));
     }
     return res.status(200).json({ message: "Program deleted" });
   } catch (err) {
-    console.error("Controller error:", err.message);
-    res
-      .status(500)
-      .json({ message: "Internal server error: Could not delete" });
+    return next(err);
   }
 };
 
-const removeWorkout = async (req, res) => {
+const removeWorkout = async (req, res, next) => {
   /*
    * This function removes a workout from a program
    *
@@ -103,11 +99,13 @@ const removeWorkout = async (req, res) => {
   const { id: program_id, workout_id } = req.params;
 
   try {
-    await removeProgramWorkout(program_id, workout_id);
+    const response = await removeProgramWorkout(program_id, workout_id);
+    if (!response) {
+      return next(new NotFoundError("Workout not found in program"));
+    }
     return res.status(200).json({ message: "Workout deleted from program" });
   } catch (err) {
-    console.error("Controller error:", err.message);
-    res.status(500).json({ message: "Failure: Internal server error" });
+    return next(err);
   }
 };
 
@@ -115,14 +113,16 @@ const removeWorkout = async (req, res) => {
  * @async
  * This function retrieves workouts relating to a certain program.
  */
-const getWorkouts = async (req, res) => {
+const getWorkouts = async (req, res, next) => {
   const { id: program_id } = req.params;
-
-  if (!program_id) {
-    return res.status(400).json({ message: "Program ID is required" });
-  }
+  const user_id = req.user_id;
 
   try {
+    const programExists = await programExistsForUser(program_id, user_id);
+    if (!programExists) {
+      return next(new NotFoundError("Program not found"));
+    }
+
     const workouts = await getProgramWorkouts(program_id);
     if (workouts.length == 0) {
       return res
@@ -133,8 +133,7 @@ const getWorkouts = async (req, res) => {
       .status(200)
       .json({ message: "Workouts successfully retrieved", data: workouts });
   } catch (err) {
-    console.error("Error in getWorkouts:", err.message);
-    res.status(500).json({ message: "Failure: Internal server error" });
+    return next(err);
   }
 };
 
@@ -142,14 +141,19 @@ const getWorkouts = async (req, res) => {
  * @async
  * This function retrieves exercises relating to a given workout id.
  */
-const getExercises = async (req, res) => {
-  const { workout_id } = req.params;
-
-  if (!workout_id) {
-    return res.status(400).json({ message: "Workout id required" });
-  }
+const getExercises = async (req, res, next) => {
+  const { id: program_id, workout_id } = req.params;
+  const user_id = req.user_id;
 
   try {
+    const programExists = await programExistsForUser(program_id, user_id);
+    if (!programExists) {
+      return next(new NotFoundError("Program not found"));
+    }
+    const workoutExists = await workoutExistsForProgram(workout_id, program_id);
+    if (!workoutExists) {
+      return next(new NotFoundError("Workout not found"));
+    }
     const exercises = await getWorkoutExercises(workout_id);
     if (!exercises || exercises.length == 0) {
       return res
@@ -160,8 +164,7 @@ const getExercises = async (req, res) => {
       .status(200)
       .json({ message: "Exercises successfully retrieved", data: exercises });
   } catch (err) {
-    console.error("Error retrieving exercises:", err.message);
-    res.status(500).json({ message: "Failure: Internal server error" });
+    return next(err);
   }
 };
 

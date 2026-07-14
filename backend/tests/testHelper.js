@@ -1,6 +1,10 @@
 const bcrypt = require("bcrypt");
 const pool = require("../db/poolConnection.js");
 
+const endTesting = async () => {
+  await pool.end();
+};
+
 const setupTestData = async () => {
   const client = await pool.connect();
 
@@ -184,4 +188,4 @@ const setupTestData = async () => {
   }
 };
 
-module.exports = { setupTestData };
+module.exports = { setupTestData, endTesting };

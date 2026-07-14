@@ -58,6 +58,28 @@ const checkEmail = async (email) => {
   }
 };
 
+const programExistsForUser = async (program_id, user_id) => {
+  const sql = `
+    SELECT 1 FROM programs
+    WHERE program_id = $1 
+      AND user_id = $2;
+  `;
+
+  const res = await pool.query(sql, [program_id, user_id]);
+  return res.rows.length === 1;
+};
+
+const workoutExistsForProgram = async (workout_id, program_id) => {
+  const sql = `
+    SELECT 1 FROM program_workouts
+    WHERE workout_id = $1
+      AND program_id = $2;
+  `;
+
+  const res = await pool.query(sql, [workout_id, program_id]);
+  return res.rowCount === 1;
+};
+
 // 2. Get user programs
 const getPrograms = async (user_id) => {
   /*
@@ -122,7 +144,6 @@ const getProgramWorkouts = async (program_id) => {
     const res = await pool.query(queryText, [program_id]);
     return res.rows;
   } catch (err) {
-    console.error("Error retrieving program workouts.");
     throw err;
   }
 };
@@ -293,6 +314,8 @@ const getLoginInfo = async (email) => {
 module.exports = {
   getUserData,
   getUserById,
+  programExistsForUser,
+  workoutExistsForProgram,
   checkEmail,
   getPrograms,
   getUserWorkouts,
