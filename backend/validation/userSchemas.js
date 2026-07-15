@@ -1,0 +1,30 @@
+const { z } = require('zod');
+
+const signupSchema = z.object({
+  f_name: z
+    .string()
+    .trim()
+    .min(1, "First name is required")
+    .max(50, "First name must not exceed 50 characters"),
+  l_name: z
+    .string()
+    .trim()
+    .min(1, "Last name is required")
+    .max(50, "Last name must not exceed 50 characters"),
+  email: z
+    .string()
+    .trim()
+    .toLowerCase()
+    .pipe(z.email("Email must be valid")),
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters")
+    .max(64, "Password must not exceed 64 characters")
+    .regex(
+      /^[\x21-\x7E]+$/,
+      "Password may only contain letters, numbers, and standard symbols"
+    )
+
+});
+
+module.exports = { signupSchema };

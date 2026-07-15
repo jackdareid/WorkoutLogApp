@@ -93,3 +93,17 @@ it("returns 404 if user_id not found", async () => {
 afterAll(async () => {
   endTesting();
 });
+
+
+// zod testing
+// signup
+it("returns 400 status and invalid email resposne", async () => {
+  const response = await request(app).get("/api/user/signup").send({
+    f_name: "Faulty",
+    l_name: "Email",
+    email: "faultyEmail",
+    password: "FakePassword"
+  })
+  expect(response.status).toBe(400);
+  expect(response.body.errors.message).toBe("Email must be valid")
+});
