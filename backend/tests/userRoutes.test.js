@@ -90,20 +90,48 @@ it("returns 404 if user_id not found", async () => {
   expect(response.body.message).toBe("User not found");
 });
 
-afterAll(async () => {
-  endTesting();
-});
-
-
 // zod testing
 // signup
 it("returns 400 status and invalid email resposne", async () => {
-  const response = await request(app).get("/api/user/signup").send({
+  const response = await request(app).post("/api/user/signup").send({
     f_name: "Faulty",
     l_name: "Email",
     email: "faultyEmail",
     password: "FakePassword"
   })
   expect(response.status).toBe(400);
-  expect(response.body.errors.message).toBe("Email must be valid")
+  expect(response.body.errors).toContainEqual({
+    field: "email",
+    message: "Email must be valid",
+  })
+});
+it("returns 400 status and missing last name response", async () => {
+  const response = await request(app).post("/api/user/signup").send({
+    f_name: "Valid",
+    l_name: "",
+    email: "valid@email.com",
+    password: "Fakepassword"
+  })
+  expect(response.status).toBe(400);
+  expect(response.body.errors).toContainEqual({
+    field: "l_name",
+    message: "Last name is required",
+  })
+})
+it("returns 400 status and short password response", async () => {
+  const response = await request(app).post("/api/user/signup").send({
+    f_name: "Valid",
+    l_name: "LastName",
+    email: "valid@email.com",
+    password: "Short"
+  })
+  expect(response.status).toBe(400);
+  expect(response.body.errors).toContainEqual({
+    field: "password",
+    message: "Password must be at least 8 characters",
+  })
+})
+
+afterAll(async () => {
+  endTesting();
 });
